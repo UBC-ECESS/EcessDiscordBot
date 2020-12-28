@@ -81,4 +81,7 @@ async def on_raw_reaction_remove(payload):
             print("Member not found.")
 
 # Run client on server
-client.run("NzkyOTk5MDcxMjY2NTA0NzQ0.X-l37w.JDCE0UQSPq02XhzwM8xPGOIzi0I")
+# Store bot token in `secret_token.txt`
+token_file = open("secret_token.txt")
+token = token_file.read()
+client.run(token)
