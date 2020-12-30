@@ -27,7 +27,7 @@ The roles are currently mapped to the following emotes.
 These can be remapped within the `EcessClient.py` file. 
 - :red_car: -> 2nd Year
 - :blue_car: -> 3rd Year
-- :race_car: -> 4th Year
+- :racing_car: -> 4th Year
 Roles will be assigned upon adding a reaction. Roles will be unassigned upon removing a reaction. Reactions consisting of emojis not included above will do nothing.
 
 ### Commands
