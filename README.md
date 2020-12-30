@@ -11,13 +11,16 @@ The following features are currently in progress of being implemented:
 - Prerequisite checker commands
 - ECE FAQ commands
 
+## Architecture
+[Cogs](https://discordpy.readthedocs.io/en/latest/ext/commands/cogs.html) were used to create modules for each feature. The `EcessClient.py` file will load the available extensions in the `cogs` directory.
+
 ## Installation
 The bot is currently not live. The instructions are meant for testing on your local machine.
 1. Clone the repository.
-2. Ensure [Python](https://www.python.org/) is installed. 
+2. Ensure [Python](https://www.python.org/) is installed. Please also install the [discord.py](https://discordpy.readthedocs.io/en/latest/intro.html#installing) library and check `requirements.txt` file for additional library details. If you can, please use a virtual environment when installing libraries.
 3. Within the [Discord Developer Portal](https://discord.com/developers/applications), create a new application. Within the Settings panel, navigate to Bot to create a bot.
-4. Within the `src` folder, create a `secret_token.txt` file. Copy the token from the Build-A-Bot configuration into the file.
-5. Within the `src` folder, create a `secret_role_msg_id.txt` file. Enable [Developer Mode](https://discordia.me/en/developer-mode) on your server. Find the message you will be using to assign roles. Right-click and copy the message ID. Copy and paste the message ID into the `secret_role_msg_id.txt` file.
+4. Within the `src/secrets` folder, create a `token.txt` file. Copy the token from the Build-A-Bot configuration into the `token.txt` file.
+5. Within the `src/secrets` folder, create a `role_msg_id.txt` file. Enable [Developer Mode](https://discordia.me/en/developer-mode) on your server. Find the message you will be using to assign roles. Right-click and copy the message ID. Copy and paste the message ID into the `role_msg_id.txt` file.
 6. Invite the bot into your server through the Developer Portal.  
 7. Test the bot by navigating to `src` and running `python3 EcessClient.py`. The bot will be online when the console displays `Bot is ready!`.
 
