@@ -1,6 +1,6 @@
 """
 Client for the ECESS server
-Responsible for loading the cog extensions
+Please ensure `secrets/token.txt` contains the bot's token
 """
 import discord
 import os

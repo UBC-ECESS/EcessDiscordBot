@@ -1,7 +1,6 @@
 """
 Use reactions to add and remove roles.
-Please ensure `secret_role_msg_id.txt` contains the corresponding message ID and
-`secret_token.txt` contains the bot's token.
+Please ensure `role_msg_id.txt` contains the selected message ID 
 """
 import discord
 import os.path
