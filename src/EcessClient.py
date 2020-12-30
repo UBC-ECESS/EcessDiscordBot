@@ -1,49 +1,58 @@
-# Use message reactions to add and remove roles
+"""
+Use reactions to add and remove roles.
+Please ensure `secret_role_msg_id.txt` contains the corresponding message ID and
+`secret_token.txt` contains the bot's token.
+"""
+
 import discord
 from discord.ext import commands
 
-# Constants
-# TODO keep this in a secret file
-# TODO use a dictionary to map emotes to roles
-# TODO add javadoc
-
+"""
+ECESS Client for distributing roles (eg. 2nd Year)
+:param Client: Discord Client to inherit from
+"""
 class EcessClient(discord.Client):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        # TODO initialization logic
+        # Mapping for emoji to role
+        self.emote_to_role = {
+            "🚗": "2nd Year",
+            "🚙": "3rd Year",
+            "🏎️": "4th Year"
+        }
+
+        # Role message ID to be receiving reacts
         role_msg_id_file = open("secret_role_msg_id.txt")
         role_msg_id = int(role_msg_id_file.read())
-        self.ROLE_MSG_ID = role_msg_id
+        self.role_msg_id = role_msg_id
 
+    """
+    Print a message indicating it is ready
+    Primarily for debugging purposes
+    """
     async def on_ready(self):
         print("Bot is ready!")
 
-    async def on_member_join(self, member):
-        role = discord.utils.get(member.server.roles, name="Unassigned Year")
-        await client.add_roles(member, role)
-
+    """
+    Assign appropriate roles upon adding reactions
+    :param payload: object to access member and guild
+    """
     async def on_raw_reaction_add(self, payload):
-        # TODO refactor to use the guild object
-        print("Reaction Added!")
         message_id = payload.message_id
-        if message_id == self.ROLE_MSG_ID:
-            guild_id = payload.guild_id
-            guild = discord.utils.find(lambda g : g.id == guild_id, client.guilds)
+        # Verify if selected message is the role message
+        if message_id == self.role_msg_id:
+            guild = self.get_guild(payload.guild_id) 
 
-            if payload.emoji.name == "🚗":
-                print("2nd Year Role")
-                role = discord.utils.get(guild.roles, name="2nd Year")
-            elif payload.emoji.name == "🚙":
-                print("3rd Year Role")
-                role = discord.utils.get(guild.roles, name="3rd Year")
-            elif payload.emoji.name == "🏎️":
-                print("4th Year Role")
-                role = discord.utils.get(guild.roles, name="4th Year")
+            # Map role to corresponding reaction
+            if payload.emoji.name in self.emote_to_role:
+                name = self.emote_to_role[payload.emoji.name]
+                role = discord.utils.get(guild.roles, name=name)
             else:
                 print("Please select either a red_car, blue_car, or race_car.")
                 return
-            
+
+            # Assign role to member
             member = payload.member 
             if member is not None:
                 await member.add_roles(role)
@@ -51,29 +60,25 @@ class EcessClient(discord.Client):
             else:
                 print("Member not found.")
     
+    """
+    Unassign roles upon removing reactions 
+    :param payload: object to access member and guild
+    """
     async def on_raw_reaction_remove(self, payload):
-        print("Reaction Removed!")
         message_id = payload.message_id
-        if message_id == self.ROLE_MSG_ID:
-            guild_id = payload.guild_id
-            guild = discord.utils.find(lambda g : g.id == guild_id, client.guilds)
+        # Verify if selected message is the role message
+        if message_id == self.role_msg_id:
+            guild = self.get_guild(payload.guild_id)
 
-            if payload.emoji.name == "🚗":
-                print("2nd Year Role")
-                role = discord.utils.get(guild.roles, name="2nd Year")
-            elif payload.emoji.name == "🚙":
-                role = discord.utils.get(guild.roles, name="3rd Year")
-            elif payload.emoji.name == "🏎️":
-                print("3rd Year Role")
-                print("4th Year Role")
-                role = discord.utils.get(guild.roles, name="4th Year")
+            # Map role to corresponding reaction
+            if payload.emoji.name in self.emote_to_role:
+                name = self.emote_to_role[payload.emoji.name]
+                role = discord.utils.get(guild.roles, name=name)
             else:
                 print("Please select either a red_car, blue_car, or race_car.")
                 return
 
-            # TODO unsure why we need to use the guild methods instead of 
-            # directly using the payloads object
-            
+            # Unassign role from member
             member = guild.get_member(payload.user_id)
             if member is not None:
                 await member.remove_roles(role)
@@ -81,13 +86,18 @@ class EcessClient(discord.Client):
             else:
                 print("Member not found.")
 
-# Run client on server
-# Store bot token in `secret_token.txt`
-# Initalize Client
-intents = discord.Intents.default()
-intents.members = True
-client = EcessClient(intents=intents, command_prefix = '.')
+def main():
+    # Enable privileged intents
+    intents = discord.Intents.default()
+    intents.members = True
 
-token_file = open("secret_token.txt")
-token = token_file.read()
-client.run(token)
+    # Store bot token in `secret_token.txt`
+    token_file = open("secret_token.txt")
+    token = token_file.read()
+
+    # Initialize and run Client
+    client = EcessClient(intents=intents, command_prefix = '.')
+    client.run(token)
+
+if __name__ == "__main__":
+    main()
