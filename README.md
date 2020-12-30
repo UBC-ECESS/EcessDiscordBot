@@ -34,7 +34,7 @@ Roles will be assigned upon adding a reaction. Roles will be unassigned upon rem
 #### Prerequisite Checking (Not Implemented)
 ECE course prerequisites can be fetched through using the `.prereq` command with the selected course. For example, using `.prereq cpen333` will list the prerequisites for CPEN333 (System Software Engineering) as CPSC259 or CPEN223.
 
-#### FAQ 
+#### FAQ (Not Implemented)
 A Frequently Asked Questions (FAQ) document can be brought up with the `.faq` command. The document will be hosted on Google Drive and will be open to suggestions for all ECE members to contribute.
 
 ## Troubleshooting
