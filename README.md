@@ -19,7 +19,7 @@ The bot is currently not live. The instructions are meant for testing on your lo
 1. Clone the repository.
 2. Ensure [Python](https://www.python.org/) is installed. Please also install the [discord.py](https://discordpy.readthedocs.io/en/latest/intro.html#installing) library and check `requirements.txt` file for additional library details. If you can, please use a virtual environment when installing libraries.
 3. Within the [Discord Developer Portal](https://discord.com/developers/applications), create a new application. Within the Settings panel, navigate to Bot to create a bot.
-4. Within the `src/secrets` folder, create a `token.txt` file. Copy the token from the Build-A-Bot configuration into the `token.txt` file.
+4. Create a `secrets` directory, which will hold your private files. Within the `src/secrets` folder, create a `token.txt` file. Copy the token from the Build-A-Bot configuration into the `token.txt` file. Remember not to share your token with anyone.
 5. Within the `src/secrets` folder, create a `role_msg_id.txt` file. Enable [Developer Mode](https://discordia.me/en/developer-mode) on your server. Find the message you will be using to assign roles. Right-click and copy the message ID. Copy and paste the message ID into the `role_msg_id.txt` file.
 6. Invite the bot into your server through the Developer Portal.  
 7. Test the bot by navigating to `src` and running `python3 EcessClient.py`. The bot will be online when the console displays `Bot is ready!`.
