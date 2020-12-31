@@ -8,7 +8,7 @@ from discord.ext import commands
 Cog for the FAQ commands
 :param cog: Inheriting the Cog class
 """
-class FaqGuru(commands.Cog):
+class FaqManager(commands.Cog):
     def __init__(self, client): 
         self.client = client
 
@@ -24,4 +24,4 @@ class FaqGuru(commands.Cog):
         await ctx.send(msg)
 
 def setup(client):
-    client.add_cog(FaqGuru(client))
+    client.add_cog(FaqManager(client))

@@ -1,7 +1,7 @@
 # ECESS Discord Bot
 A work in progress Discord bot to be deployed on the [Electrical and Computer Engineering Student Society](http://ubcecess.com/) (ECESS) server. 
 
-The motivation to build a custom bot against using pre-built solutions (such as MEE6) stemmed from the lack of flexibility beyond role distribution. 
+The motivation to build a custom bot against using pre-built solutions (such as MEE6) stemmed from the lack of flexibility for additional features beyond role distribution.
 
 ## Progress
 The following features are currently supported:
@@ -31,18 +31,25 @@ These can be remapped within the `RoleDistributor.py` file.
 - :red_car: -> 2nd Year
 - :blue_car: -> 3rd Year
 - :racing_car: -> 4th Year
+
 Roles will be assigned upon adding a reaction. Roles will be unassigned upon removing a reaction. Reactions consisting of emojis not included above will do nothing.
 
 ### Commands
-#### Prerequisite Checking (Not Implemented)
+#### Prerequisite Checking (WIP)
 Commands can be found within the `PrerequisiteChecker.py` file.
 ECE/CS course prerequisites can be fetched through using the `.prereq` command with the selected course. For example, using `.prereq cpen333` will list the prerequisites for CPEN333 (System Software Engineering) as CPSC259 or CPEN223.
 
 #### FAQ
-Commands can be found within the `FaqGuru.py` file.
+Commands can be found within the `FaqManager.py` file.
 A Frequently Asked Questions (FAQ) document can be brought up with the various commands. In addition, it will link to a document which will be hosted on Google Drive and open to suggestions for all ECE members to contribute.
 - `.programs`: Brings up program links for ECE, including MASc and MEng.
 
 ## Troubleshooting
 ### SSL Certificate Expiration on Windows
 The solution can be found on a Github issue comment [here](https://github.com/Rapptz/discord.py/issues/4159#issuecomment-640107584). Downloading and installing the certificate can be done from [here](https://crt.sh/?id=2835394). The download link can be explicitly found [here](https://beans-took-my-kids.reeee.ee/38qB2n.png).
+
+### Member Not Found on Reaction Removal
+Please ensure privileged intents are enabled on the server. Otherwise, `guild.get_members` will not return the proper result.
+
+### Unable to Find Message DI
+Please verify Developer Mode has been enabled on your server.
