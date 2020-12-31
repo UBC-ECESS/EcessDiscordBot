@@ -21,8 +21,11 @@ class RoleDistributor(commands.Cog):
             "🏎️": "4th Year"
         }
 
+        # Parent directory of the bot repo; constructed as parentDir(srcDir(fileDir(file)))
+        botDir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
         # Role message ID to be receiving reacts
-        role_msg_id_file = open(os.path.dirname(__file__) + "/../secrets/role_msg_id.txt")
+        role_msg_id_file = open(os.path.join(botDir, 'secrets/role_msg_id.txt'))
         role_msg_id = int(role_msg_id_file.read())
         self.role_msg_id = role_msg_id
 
