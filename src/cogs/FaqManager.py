@@ -23,5 +23,14 @@ class FaqManager(commands.Cog):
                "MASc/MEng: http://www.ece.ubc.ca/admissions/graduate/apply")
         await ctx.send(msg)
 
+    """
+    Bring up the LeetCode Intro Prep Guide
+    :param ctx: context command invoked under
+    """
+    @commands.command()
+    async def leetcode(self, ctx):
+        msg = ("LC Intro Guide: https://docs.google.com/document/d/16BeYJzj_az-8Zv562RgZ0M_mxvCo6W6Thhc0D1oaNwE/edit?usp=sharing")
+        await ctx.send(msg)
+
 def setup(client):
     client.add_cog(FaqManager(client))

@@ -43,6 +43,7 @@ ECE/CS course prerequisites can be fetched through using the `.prereq` command w
 Commands can be found within the `FaqManager.py` file.
 A Frequently Asked Questions (FAQ) document can be brought up with the various commands. In addition, it will link to a document which will be hosted on Google Drive and open to suggestions for all ECE members to contribute.
 - `.programs`: Brings up program links for ECE, including MASc and MEng.
+- `.leetcode`: Brings up a self-written LeetCode introductory prep guide, which can be found [here](https://docs.google.com/document/d/16BeYJzj_az-8Zv562RgZ0M_mxvCo6W6Thhc0D1oaNwE/edit?usp=sharing)
 
 ## Troubleshooting
 ### SSL Certificate Expiration on Windows
@@ -51,5 +52,5 @@ The solution can be found on a Github issue comment [here](https://github.com/Ra
 ### Member Not Found on Reaction Removal
 Please ensure privileged intents are enabled on the server. Otherwise, `guild.get_members` will not return the proper result.
 
-### Unable to Find Message DI
+### Unable to Find Message ID
 Please verify Developer Mode has been enabled on your server.
