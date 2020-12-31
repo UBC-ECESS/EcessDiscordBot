@@ -26,8 +26,7 @@ class RoleDistributor(commands.Cog):
 
         # Role message ID to be receiving reacts
         role_msg_id_file = open(os.path.join(botDir, 'secrets/role_msg_id.txt'))
-        role_msg_id = int(role_msg_id_file.read())
-        self.role_msg_id = role_msg_id
+        self.role_msg_id = int(role_msg_id_file.read())
 
     """
     Print a message indicating it is ready
