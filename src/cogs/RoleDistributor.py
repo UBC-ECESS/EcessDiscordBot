@@ -1,6 +1,6 @@
 """
 Use reactions to add and remove roles.
-Please ensure `role_msg_id.txt` contains the selected message ID 
+Please ensure `secrets/role_msg_id.txt` contains the selected message ID 
 """
 import discord
 import os.path
@@ -10,7 +10,7 @@ from discord.ext import commands
 Cog for distributing roles (eg. 2nd Year)
 :param cog: Inheriting the Cog class
 """
-class RoleDistribution(commands.Cog):
+class RoleDistributor(commands.Cog):
     def __init__(self, client): 
         self.client = client
 
@@ -88,4 +88,4 @@ class RoleDistribution(commands.Cog):
                 print("Member not found.")
 
 def setup(client):
-    client.add_cog(RoleDistribution(client))
+    client.add_cog(RoleDistributor(client))

@@ -1,15 +1,15 @@
 # ECESS Discord Bot
-A work in progress Discord bot to be deployed on the Electrical and Computer Engineering Student Society (ECESS) server. 
+A work in progress Discord bot to be deployed on the [Electrical and Computer Engineering Student Society](http://ubcecess.com/) (ECESS) server. 
 
 The motivation to build a custom bot against using pre-built solutions (such as MEE6) stemmed from the lack of flexibility beyond role distribution. 
 
 ## Progress
 The following features are currently supported:
 - Assigning roles from reaction messages
+- ECE FAQ commands
 
 The following features are currently in progress of being implemented:
 - Prerequisite checker commands
-- ECE FAQ commands
 
 ## Architecture
 [Cogs](https://discordpy.readthedocs.io/en/latest/ext/commands/cogs.html) were used to create modules for each feature. The `EcessClient.py` file will load the available extensions in the `cogs` directory.
@@ -27,7 +27,7 @@ The bot is currently not live. The instructions are meant for testing on your lo
 ## Features
 ### Role Distribution
 The roles are currently mapped to the following emotes.
-These can be remapped within the `EcessClient.py` file. 
+These can be remapped within the `RoleDistributor.py` file. 
 - :red_car: -> 2nd Year
 - :blue_car: -> 3rd Year
 - :racing_car: -> 4th Year
@@ -35,10 +35,13 @@ Roles will be assigned upon adding a reaction. Roles will be unassigned upon rem
 
 ### Commands
 #### Prerequisite Checking (Not Implemented)
-ECE course prerequisites can be fetched through using the `.prereq` command with the selected course. For example, using `.prereq cpen333` will list the prerequisites for CPEN333 (System Software Engineering) as CPSC259 or CPEN223.
+Commands can be found within the `PrerequisiteChecker.py` file.
+ECE/CS course prerequisites can be fetched through using the `.prereq` command with the selected course. For example, using `.prereq cpen333` will list the prerequisites for CPEN333 (System Software Engineering) as CPSC259 or CPEN223.
 
-#### FAQ (Not Implemented)
-A Frequently Asked Questions (FAQ) document can be brought up with the `.faq` command. The document will be hosted on Google Drive and will be open to suggestions for all ECE members to contribute.
+#### FAQ
+Commands can be found within the `FaqGuru.py` file.
+A Frequently Asked Questions (FAQ) document can be brought up with the various commands. In addition, it will link to a document which will be hosted on Google Drive and open to suggestions for all ECE members to contribute.
+- `.programs`: Brings up program links for ECE, including MASc and MEng.
 
 ## Troubleshooting
 ### SSL Certificate Expiration on Windows
