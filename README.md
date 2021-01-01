@@ -37,14 +37,14 @@ Roles will be assigned upon adding a reaction. Roles will be unassigned upon rem
 ### Commands
 #### Prerequisite Checking (WIP)
 Commands can be found within the `PrerequisiteChecker.py` file.
-ECE/CS course prerequisites can be fetched through using the `.prereq` command with the selected course. For example, using `.prereq cpen333` will list the prerequisites for CPEN333 (System Software Engineering) as CPSC259 or CPEN223.
+ECE/CS course prerequisites can be fetched through using the `!prereq` command with the selected course. For example, using `!prereq cpen333` will list the prerequisites for CPEN333 (System Software Engineering) as CPSC259 or CPEN223.
 
 #### FAQ
 Commands can be found within the `FaqManager.py` file.
 A Frequently Asked Questions (FAQ) document can be brought up with the various commands. In addition, it will link to a document which will be hosted on Google Drive and open to suggestions for all ECE members to contribute.
-- `.programs`: Brings up program links for ECE, including MASc and MEng.
-- `.leetcode`: Brings up a self-written LeetCode introductory prep guide, which can be found [here](https://docs.google.com/document/d/16BeYJzj_az-8Zv562RgZ0M_mxvCo6W6Thhc0D1oaNwE/edit?usp=sharing)
-- `.blind75`: Brings up the Blind 75 LeetCode list, which can be found [here](https://docs.google.com/spreadsheets/d/1O6lu-27mkdEfQAFfMB43vcqZRF57ygtJO2tCDw2ZQaY/edit?usp=sharing)
+- `!programs`: Brings up program links for ECE, including MASc and MEng.
+- `!leetcode`: Brings up a self-written LeetCode introductory prep guide, which can be found [here](https://docs.google.com/document/d/16BeYJzj_az-8Zv562RgZ0M_mxvCo6W6Thhc0D1oaNwE/edit?usp=sharing)
+- `!blind75`: Brings up the Blind 75 LeetCode list, which can be found [here](https://docs.google.com/spreadsheets/d/1O6lu-27mkdEfQAFfMB43vcqZRF57ygtJO2tCDw2ZQaY/edit?usp=sharing)
 
 ## Troubleshooting
 ### SSL Certificate Expiration on Windows

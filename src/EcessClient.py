@@ -13,7 +13,7 @@ def main():
     intents.members = True
 
     # Initialize the client
-    client = commands.Bot(intents=intents, command_prefix='.')
+    client = commands.Bot(intents=intents, command_prefix='!')
 
     """
     Load the cog extension
