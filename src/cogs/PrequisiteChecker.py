@@ -40,9 +40,9 @@ class PrerequisiteChecker(commands.Cog):
             await ctx.send("Unable to identify specified program")
             return
 
-        courseNumString = arg[4:7]
+        course_num_string = arg[4:7]
         try:
-            int(courseNumString)
+            int(course_num_string)
         except: 
             await ctx.send("Invalid Course Number")
             return          
