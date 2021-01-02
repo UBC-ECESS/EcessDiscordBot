@@ -10,28 +10,29 @@ from discord.ext import commands
 Cog for distributing roles (eg. 2nd Year)
 :param cog: Inheriting the Cog class
 """
+
+
 class RoleDistributor(commands.Cog):
-    def __init__(self, client): 
+    def __init__(self, client):
         self.client = client
 
         # Mapping for emoji to role
-        self.emote_to_role = {
-            "🚗": "2nd Year",
-            "🚙": "3rd Year",
-            "🏎️": "4th Year"
-        }
+        self.emote_to_role = {"🚗": "2nd Year", "🚙": "3rd Year", "🏎️": "4th Year"}
 
         # Parent directory of the bot repo; constructed as parentDir(srcDir(fileDir(file)))
         bot_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
         # Role message ID to be receiving reacts
-        role_msg_id_file = open(os.path.join(bot_dir, 'secrets/role_msg_id.txt'))
+        role_msg_id_file = open(
+            os.path.join(bot_dir, 'secrets/role_msg_id.txt')
+        )
         self.role_msg_id = int(role_msg_id_file.read())
 
     """
     Print a message indicating it is ready
     Primarily for debugging purposes
     """
+
     @commands.Cog.listener()
     async def on_ready(self):
         print("Bot is ready!")
@@ -40,12 +41,13 @@ class RoleDistributor(commands.Cog):
     Assign appropriate roles upon adding reactions
     :param payload: object to access member and guild
     """
+
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):
         message_id = payload.message_id
         # Verify if selected message is the role message
         if message_id == self.role_msg_id:
-            guild = self.client.get_guild(payload.guild_id) 
+            guild = self.client.get_guild(payload.guild_id)
 
             # Map role to corresponding reaction
             if payload.emoji.name in self.emote_to_role:
@@ -56,17 +58,18 @@ class RoleDistributor(commands.Cog):
                 return
 
             # Assign role to member
-            member = payload.member 
+            member = payload.member
             if member is not None:
                 await member.add_roles(role)
                 print("Role assigned!")
             else:
                 print("Member not found.")
-    
+
     """
     Unassign roles upon removing reactions 
     :param payload: object to access member and guild
     """
+
     @commands.Cog.listener()
     async def on_raw_reaction_remove(self, payload):
         message_id = payload.message_id
@@ -88,6 +91,7 @@ class RoleDistributor(commands.Cog):
                 print("Role removed!")
             else:
                 print("Member not found.")
+
 
 def setup(client):
     client.add_cog(RoleDistributor(client))

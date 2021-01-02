@@ -10,8 +10,10 @@ import os
 Cog for the prerequisite check commands
 :param cog: Inheriting the Cog class
 """
+
+
 class PrerequisiteChecker(commands.Cog):
-    def __init__(self, client): 
+    def __init__(self, client):
         self.client = client
 
         # Parent directory of the bot repo; constructed as parentDir(srcDir(fileDir(file)))
@@ -55,6 +57,7 @@ class PrerequisiteChecker(commands.Cog):
             await ctx.send("Course Not Found")
 
         return
+
 
 def setup(client):
     client.add_cog(PrerequisiteChecker(client))
