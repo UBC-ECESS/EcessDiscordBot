@@ -10,9 +10,11 @@ programs_msg = (
     "ELEC: https://www.ece.ubc.ca/academic-programs/undergraduate/programs/electrical-engineering-program \n"
     "MASc/MEng: http://www.ece.ubc.ca/admissions/graduate/apply"
 )
-leetcode_msg = "LC Intro Guide: https://docs.google.com/document/d/16BeYJzj_az-8Zv562RgZ0M_mxvCo6W6Thhc0D1oaNwE/edit?usp=sharing"
+leetcode_msg = "LC Intro Guide: https://docs.google.com/document/d/16BeYJzj_az-8Zv562RgZ0M_mxvCo6W6Thhc0D1oaNwE/edit?usp=sharing \nTo bring up the Blind75 list, please use `!blind75`"
 blind75_msg = "Blind75 LC List: https://docs.google.com/spreadsheets/d/1O6lu-27mkdEfQAFfMB43vcqZRF57ygtJO2tCDw2ZQaY/edit?usp=sharing"
-repo_msg = "Repo: https://github.com/kelvinkoon/ecess-discord-bot"
+repo_msg = (
+    "ECESS Discord Bot's Github Repo: https://github.com/kelvinkoon/ecess-discord-bot"
+)
 
 """
 Cog for the FAQ commands
@@ -40,9 +42,7 @@ class FaqManager(commands.Cog):
 
     @commands.command()
     async def leetcode(self, ctx):
-        await ctx.send(
-            leetcode_msg + "\nTo bring up the Blind75 list, please use `!blind75`"
-        )
+        await ctx.send(leetcode_msg)
 
     """
     Bring up the Blind75 LeetCode list
