@@ -11,12 +11,12 @@ programs_msg = (
     "MASc/MEng: http://www.ece.ubc.ca/admissions/graduate/apply"
 )
 leetcode_msg = (
-    "LC Intro Guide: https://docs.google.com/document/d/16BeYJzj_az-8Zv562RgZ0M_mxvCo6W6Thhc0D1oaNwE/edit?usp=sharing \n"
+    "LC Intro Guide: <https://docs.google.com/document/d/16BeYJzj_az-8Zv562RgZ0M_mxvCo6W6Thhc0D1oaNwE/edit?usp=sharing> \n"
     "To bring up the Blind75 list, please use `!blind75`"
 )
-blind75_msg = "Blind75 LC List: https://docs.google.com/spreadsheets/d/1O6lu-27mkdEfQAFfMB43vcqZRF57ygtJO2tCDw2ZQaY/edit?usp=sharing"
+blind75_msg = "Blind75 LC List: <https://docs.google.com/spreadsheets/d/1O6lu-27mkdEfQAFfMB43vcqZRF57ygtJO2tCDw2ZQaY/edit?usp=sharing>"
 repo_msg = (
-    "ECESS Discord Bot's Github Repo: https://github.com/kelvinkoon/ecess-discord-bot"
+    "ECESS Discord Bot's Github Repo: <https://github.com/kelvinkoon/ecess-discord-bot>"
 )
 
 

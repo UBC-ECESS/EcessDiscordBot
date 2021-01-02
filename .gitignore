@@ -1,3 +1,4 @@
 python_env
 secrets
 __pycache__
+.DS_Store

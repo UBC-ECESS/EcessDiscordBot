@@ -36,19 +36,24 @@ class PrerequisiteChecker(commands.Cog):
     List the provided course's prerequisites and corequisites
     :param arg: the course given as the argument
     """
+
     @commands.command()
     async def prereq(self, ctx, arg):
 
         # A lot of error checking and log messages
         # TODO make this error comment more detailed
         if not (7 <= len(arg) <= 8):
-            await ctx.send("Invalid Input Length")
+            await ctx.send("Invalid input length.")
             return
 
         # Verify the program is either CPEN or ELEC
         program = arg[0:4]
-        if program.lower() != "cpen" and program.lower() != "elec":
-            await ctx.send("Unable to identify specified program")
+        if (
+            program.lower() != "cpen"
+            and program.lower() != "elec"
+            and program.lower() != "cpsc"
+        ):
+            await ctx.send("Unable to identify specified program.")
             return
 
         # Verify course level is valid
@@ -56,16 +61,17 @@ class PrerequisiteChecker(commands.Cog):
         try:
             int(course_num_string)
         except:
-            await ctx.send("Invalid Course Number")
+            await ctx.send("Invalid course number.")
             return
 
         if arg.upper() in self.course_info_dict:
             info = self.course_info_dict[arg.upper()]
             await ctx.send(
-                f"Course Name: {info['Name']}\nPrerequisites: {info['Prerequisites']}\nCorequisites: {info['Corequisites']}\nCourse Page: {info['URL']}"
+                f"Course: {info['Name']}\nPrerequisites: **{info['Prerequisites']}**\nCorequisites: **{info['Corequisites']}**\nCourse Description: {info['Description']}\nCourse Page: <{info['URL']}>"
             )
         else:
             await ctx.send("Course Not Found. Make sure input has no spaces.")
-    
+
+
 def setup(client):
     client.add_cog(PrerequisiteChecker(client))
