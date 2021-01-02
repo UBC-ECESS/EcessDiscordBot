@@ -64,7 +64,7 @@ class Repl(commands.Cog):
                 else:
                     await msg.edit(
                         content=f"{ctx.author.mention}```\n{output or 'No output.'}```",
-                        allowed_mentions=discord.AllowedMentions.none()
+                        allowed_mentions=discord.AllowedMentions(everyone=False, roles=False, users=[ctx.author])
                     )
         else:
             return await ctx.send(
