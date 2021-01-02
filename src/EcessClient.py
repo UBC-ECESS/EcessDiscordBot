@@ -67,7 +67,7 @@ def main():
             client.load_extension(f"cogs.{filename[:-3]}")
 
     # Read the bot token within `secrets`
-    token_file = open(os.path.join(bot_dir, "secrets/token.txt"))
+    token_file = open(os.path.join(bot_dir, "src/secrets/token.txt"))
     token = token_file.read()
 
     # Run the client

@@ -6,13 +6,12 @@ import discord
 import os.path
 from discord.ext import commands
 
-"""
-Cog for distributing roles (eg. 2nd Year)
-:param cog: Inheriting the Cog class
-"""
-
 
 class RoleDistributor(commands.Cog):
+    """
+    Cog for distributing roles (eg. 2nd Year)
+    """
+
     def __init__(self, client):
         self.client = client
 
@@ -25,7 +24,7 @@ class RoleDistributor(commands.Cog):
         )
 
         # Role message ID to be receiving reacts
-        role_msg_id_file = open(os.path.join(bot_dir, "secrets/role_msg_id.txt"))
+        role_msg_id_file = open(os.path.join(bot_dir, "src/secrets/role_msg_id.txt"))
         self.role_msg_id = int(role_msg_id_file.read())
 
     """

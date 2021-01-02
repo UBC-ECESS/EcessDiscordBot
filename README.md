@@ -7,8 +7,6 @@ The motivation to build a custom bot against using pre-built solutions (such as 
 The following features are currently supported:
 - Assigning roles from reaction messages
 - ECE FAQ commands
-
-The following features are currently in progress of being implemented:
 - Prerequisite checker commands
 
 ## Architecture
@@ -36,9 +34,9 @@ These can be remapped within the `RoleDistributor.py` file.
 Roles will be assigned upon adding a reaction. Roles will be unassigned upon removing a reaction. Reactions consisting of emojis not included above will do nothing.
 
 ### Commands
-#### Prerequisite Checking (WIP)
+#### Prerequisite Checking
 Commands can be found within the `PrerequisiteChecker.py` file.
-ECE/CS course prerequisites can be fetched through using the `!prereq` command with the selected course. For example, using `!prereq cpen333` will list the prerequisites for CPEN333 (System Software Engineering) as CPSC259 or CPEN223.
+ECE/CS course prerequisites can be fetched through using the `!prereq` command with the selected course. For example, using `!prereq cpen333` will list the prerequisites for CPEN333 (System Software Engineering) as CPSC259 or CPEN223. Please ensure there are no spaces when providing the course input.
 
 #### FAQ
 Commands can be found within the `FaqManager.py` file.
