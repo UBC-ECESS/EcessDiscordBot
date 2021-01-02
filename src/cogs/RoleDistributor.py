@@ -19,12 +19,14 @@ class RoleDistributor(commands.Cog):
         # Mapping for emoji to role
         self.emote_to_role = {"🚗": "2nd Year", "🚙": "3rd Year", "🏎️": "4th Year"}
 
-        # Role message ID to be receiving reacts
-        role_msg_id_file = open(
-            os.path.dirname(__file__) + "/../secrets/role_msg_id.txt"
+        # Parent directory of the bot repo; constructed as parentDir(srcDir(fileDir(file)))
+        bot_dir = os.path.dirname(
+            os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         )
-        role_msg_id = int(role_msg_id_file.read())
-        self.role_msg_id = role_msg_id
+
+        # Role message ID to be receiving reacts
+        role_msg_id_file = open(os.path.join(bot_dir, "secrets/role_msg_id.txt"))
+        self.role_msg_id = int(role_msg_id_file.read())
 
     """
     Print a message indicating it is ready
