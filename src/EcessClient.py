@@ -32,15 +32,15 @@ def main():
         client.unload_extension(f'cogs.{extension}')
 
     # Parent directory of the bot repo; constructed as parentDir(fileDir(file))
-    botDir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    bot_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
     # Load extensions inside of `cogs` directory
-    for filename in os.listdir(os.path.join(botDir, 'src/cogs')):
+    for filename in os.listdir(os.path.join(bot_dir, 'src/cogs')):
         if filename.endswith('.py'):
             client.load_extension(f'cogs.{filename[:-3]}')
 
     # Read the bot token within `secrets`
-    token_file = open(os.path.join(botDir, 'secrets/token.txt'))
+    token_file = open(os.path.join(bot_dir, 'secrets/token.txt'))
     token = token_file.read()
 
     # Run the client
