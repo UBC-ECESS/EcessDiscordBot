@@ -19,7 +19,7 @@ The bot is currently not live. The instructions are meant for testing on your lo
 3. Within the [Discord Developer Portal](https://discord.com/developers/applications), create a new application. Within the Settings panel, navigate to Bot to create a bot.
 4. Create a `secrets` directory, which will hold your private files. Within the `src/secrets` folder, create a `token.txt` file. Copy the token from the Build-A-Bot configuration into the `token.txt` file. Remember not to share your token with anyone.
 5. Within the `src/secrets` folder, create a `role_msg_id.txt` file. Enable [Developer Mode](https://discordia.me/en/developer-mode) on your server. Find the message you will be using to assign roles. Right-click and copy the message ID. Copy and paste the message ID into the `role_msg_id.txt` file.
-6. Invite the bot into your server through the Developer Portal.  
+6. Invite the bot into your server through the Developer Portal. This is found in the OAuth2 section of the Settings. Remember to put the bot on a higher privilege than the roles you are assigning.  
 7. Test the bot by navigating to `src` and running `python3 EcessClient.py`. The bot will be online when the console displays `Bot is ready!`.
 8. (Optional) To format your Python files, run `chmod +x fix_formatting.sh` to enable execute permissions. Proceed to run `./fix_formatting.sh`, which will run the [Black](https://github.com/psf/black) code formatter.
 
@@ -31,7 +31,7 @@ These can be remapped within the `RoleDistributor.py` file.
 - :blue_car: -> 3rd Year
 - :racing_car: -> 4th Year
 
-Roles will be assigned upon adding a reaction. Roles will be unassigned upon removing a reaction. Reactions consisting of emojis not included above will do nothing.
+Roles will be assigned upon adding a reaction. Roles will be unassigned upon removing a reaction. Reactions consisting of emojis not included above will do nothing. You can only have one role at a time.
 
 ### Commands
 #### Prerequisite Checking
@@ -56,3 +56,6 @@ Please ensure privileged intents are enabled on the server. Otherwise, `guild.ge
 
 ### Unable to Find Message ID
 Please verify Developer Mode has been enabled on your server.
+
+### Permission Errors in Console
+Generally a 403 error. Ensure the bot privileges are higher than the roles being assigned, which can be adjusted in the server settings.
