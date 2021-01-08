@@ -36,7 +36,7 @@ Roles will be assigned upon adding a reaction. Roles will be unassigned upon rem
 ### Commands
 #### Prerequisite Checking
 Commands can be found within the `PrerequisiteChecker.py` file.
-ECE/CS course prerequisites can be fetched through using the `!prereq` command with the selected course. For example, using `!prereq cpen333` will list the prerequisites for CPEN333 (System Software Engineering) as CPSC259 or CPEN223. Please ensure there are no spaces when providing the course input.
+ECE/CS course prerequisites can be fetched through using the `!prereq` command with the selected course. For example, using `!prereq cpen333` will list the prerequisites for CPEN333 (System Software Engineering) as CPSC259 or CPEN223. Please ensure there are no spaces when providing the course input. The courses supported can be found in `assets/ece-course-prereqs.csv`.
 
 #### FAQ
 Commands can be found within the `FaqManager.py` file.
