@@ -27,13 +27,14 @@ class RoleDistributor(commands.Cog):
         self.role_mapping_file = os.path.join(bot_dir, "src/secrets/role_mappings.json")
 
         if not os.path.exists(self.role_mapping_file):
-            with open(self.role_mapping_file, "w") as f:
-                json.dump({}, f)
+            self._write_json({}, self.role_mapping_file)
 
         try:
             with open(self.role_mapping_file, "r") as f:
                 self.role_mapping = json.loads(f.read())
         except JSONDecodeError:
+            # Self-repair the file, but this means the mapping will be lost
+            self._write_json({}, self.role_mapping_file)
             self.role_mapping = {}
 
         self.role_collector = None
