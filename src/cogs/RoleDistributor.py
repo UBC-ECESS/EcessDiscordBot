@@ -27,14 +27,6 @@ class RoleDistributor(commands.Cog):
         role_msg_id_file = open(os.path.join(bot_dir, "src/secrets/role_msg_id.txt"))
         self.role_msg_id = int(role_msg_id_file.read())
 
-    """
-    Print a message indicating it is ready
-    Primarily for debugging purposes
-    """
-
-    @commands.Cog.listener()
-    async def on_ready(self):
-        print("Bot is ready!")
 
     """
     Assign appropriate roles upon adding reactions
