@@ -4,6 +4,7 @@ Please ensure `secrets/token.txt` contains the bot's token.
 """
 import discord
 import os
+import traceback
 from discord.ext import commands
 
 
@@ -38,6 +39,7 @@ def main():
             await ctx.send("Malformed arguments. Command help:")
             await help.send_command_help(ctx.command)
         else:
+            print("".join(traceback.format_exception(type(error), error, error.__traceback__)))
             await ctx.send(f"An error occured with the {ctx.command.name} command.")
 
     @client.command()
