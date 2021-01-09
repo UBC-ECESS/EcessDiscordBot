@@ -25,13 +25,25 @@ The bot is currently not live. The instructions are meant for testing on your lo
 
 ## Features
 ### Role Distribution
-The roles are currently mapped to the following emotes.
-These can be remapped within the `RoleDistributor.py` file. 
-- :red_car: -> 2nd Year
-- :blue_car: -> 3rd Year
-- :racing_car: -> 4th Year
 
-Roles will be assigned upon adding a reaction. Roles will be unassigned upon removing a reaction. Reactions consisting of emojis not included above will do nothing. You can only have one role at a time.
+Roles can be distributed arbitrarily and set up with the interactive mapper within the `RoleDistributor.py` file.
+
+To set up a new role distributor, initialize a new session with `!initialize_role_mapping <message_id> [options]`. To get the message ID, hold shift and click on the `ID` icon to the right of the message (make sure you have Developer Mode enabled). Currently, the only option supported is `unique`, which is a flag for this listener that the roles being assigned are unique (ie. only one role from that listener can be assigned to single user at a time).
+
+With the session started, add new mappings with `!add_role_mapping <emote> <role_id>`. Note that you can also mention the role in order to set up the mapping. Both custom and unicode emotes are supported.
+
+Once you're done, finalize the mapping with `!finalize_role_mapping`. This will clear all the reactions on the targeted message, and initialize the mapped reactions.
+
+#### Caveats
+
+- The channel with the role reacts must grant everyone the `Add Reactions` permission. The bot will handle removing reactions that aren't mapped.
+
+- If you delete a mapped message, remember to delete the mapping too (`!delete_role_mapping <message_id>`). There won't be an error, but you won't be able to map those roles again until you've removed the old listeners.
+
+- Roles are unique; you cannot map the same role to multiple listeners or emotes.
+
+- Mapping can only be done by the bot owner at this time (TODO)
+
 
 ### Commands
 #### Prerequisite Checking

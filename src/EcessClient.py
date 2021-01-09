@@ -18,6 +18,14 @@ def main():
     client = commands.Bot(intents=intents, command_prefix="!")
 
     @client.event
+    async def on_ready():
+        """
+        Print a message indicating it is ready
+        Primarily for debugging purposes
+        """
+        print("Bot is ready!")
+
+    @client.event
     async def on_command_error(ctx, error):
         if isinstance(error, commands.errors.CommandNotFound):
             pass
