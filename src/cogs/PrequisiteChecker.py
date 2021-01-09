@@ -97,9 +97,7 @@ class PrerequisiteChecker(commands.Cog):
 
     @commands.command()
     async def courseinfo(self, ctx, course: CourseConverter):
-        course_info = await self._scrape_course_info(
-            self._get_course_url(course["dept"], course["course"]), course
-        )
+        course_info = await self._scrape_course_info(course)
         if course_info is None:
             return await ctx.send("Course not found.")
         em = discord.Embed(title=course_info["name"], url=course_info["url"])
@@ -117,7 +115,8 @@ class PrerequisiteChecker(commands.Cog):
     def _get_course_url(dept, course):
         return f"https://courses.students.ubc.ca/cs/courseschedule?pname=subjarea&tname=subj-course&dept={dept}&course={course}"
 
-    async def _scrape_course_info(self, url, course):
+    async def _scrape_course_info(self, course):
+        url = self._get_course_url(course["dept"], course["course"])
         try:
             async with self.session.get(url) as resp:
                 soup = BeautifulSoup(await resp.text(), "html.parser")
