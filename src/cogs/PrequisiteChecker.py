@@ -14,7 +14,7 @@ class CourseConverter(commands.Converter):
     async def convert(self, ctx, argument):
         if len(argument) > 8:
             raise commands.errors.BadArgument
-        match = re.search(r"([A-Z]{4})([0-9]{3}[A-Z]{0,1})", argument)
+        match = re.search(r"([A-Za-z]{4})([0-9]{3}[A-Za-z]{0,1})", argument)
         if match:
             dept, course = match.groups()
             if not dept or not course:
@@ -50,8 +50,6 @@ class PrerequisiteChecker(commands.Cog):
 
         self.course_info_dict = course_info_dict
         self.session = aiohttp.ClientSession()
-
-    
 
     @commands.command()
     async def prereq(self, ctx, arg):
@@ -99,7 +97,7 @@ class PrerequisiteChecker(commands.Cog):
     async def courseinfo(self, ctx, course: CourseConverter):
         """
         Get a simplified view of the course info.
-        Make sure the course is capitalized with no spaces.
+        Make sure the course is in the form of DEPT### (case-insensitive).
         """
         course_info = await self._scrape_course_info(course)
         if course_info is None:
@@ -128,7 +126,7 @@ class PrerequisiteChecker(commands.Cog):
                 soup = BeautifulSoup(await resp.text(), "html.parser")
                 name = soup.find(
                     lambda predicate: predicate.name == "h4"
-                    and all([c in predicate.text for c in course.values()])
+                    and all([c.upper() in predicate.text for c in course.values()])
                 )
                 prereqs = soup.find(
                     lambda predicate: predicate.name == "p"
