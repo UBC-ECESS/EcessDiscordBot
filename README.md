@@ -50,6 +50,10 @@ Once you're done, finalize the mapping with `!finalize_role_mapping`. This will 
 Commands can be found within the `PrerequisiteChecker.py` file.
 ECE/CS course prerequisites can be fetched through using the `!prereq` command with the selected course. For example, using `!prereq cpen333` will list the prerequisites for CPEN333 (System Software Engineering) as CPSC259 or CPEN223. Please ensure there are no spaces when providing the course input. The courses supported can be found in `assets/ece-course-prereqs.csv`.
 
+#### Course Info
+
+Course info can be attained with `!courseinfo <course>`. Note that the course structure should be DEPT### (case-sensitive). The command scrapes the UBC Course Schedule, so the data should be up-to-date. If it fails, use `!prereq <course>` instead.
+
 #### Repl
 Commands can be found within the `Repl.py` file.
 
