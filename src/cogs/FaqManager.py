@@ -28,36 +28,35 @@ class FaqManager(commands.Cog):
     def __init__(self, client):
         self.client = client
 
-    """
-    Bring up ECE program details
-    """
-
     @commands.command()
     async def programs(self, ctx):
+        """
+        Bring up ECE program details
+        """
         await ctx.send(programs_msg)
 
-    """
-    Bring up the LeetCode Intro Prep Guide
-    """
 
     @commands.command()
     async def leetcode(self, ctx):
+        """
+        Bring up the LeetCode Intro Prep Guide
+        """
         await ctx.send(leetcode_msg)
 
-    """
-    Bring up the Blind75 LeetCode list
-    """
 
     @commands.command()
     async def blind75(self, ctx):
+        """
+        Bring up the Blind75 LeetCode list
+        """
         await ctx.send(blind75_msg)
 
-    """
-    Bring up the bot's Github repository
-    """
 
     @commands.command()
     async def repo(self, ctx):
+        """
+        Bring up the bot's Github repository
+        """
         await ctx.send(repo_msg)
 
 
