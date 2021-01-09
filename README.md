@@ -50,6 +50,17 @@ Once you're done, finalize the mapping with `!finalize_role_mapping`. This will 
 Commands can be found within the `PrerequisiteChecker.py` file.
 ECE/CS course prerequisites can be fetched through using the `!prereq` command with the selected course. For example, using `!prereq cpen333` will list the prerequisites for CPEN333 (System Software Engineering) as CPSC259 or CPEN223. Please ensure there are no spaces when providing the course input. The courses supported can be found in `assets/ece-course-prereqs.csv`.
 
+#### Repl
+Commands can be found within the `Repl.py` file.
+
+This command relies on an external service [[source](https://github.com/lcfyi/repl-api)]. By default, this cog will start uninitialized, and will require the owner of the bot to run `!set_repl <service_url>` to enable the functionality of the cog.
+
+##### Running Locally
+
+If desired, the above repo can be run locally where the bot is hosted. To get started, install `docker` and `docker-compose`. Next, clone the [repo](https://github.com/lcfyi/repl-api) and initialize it by running `docker-compose up`. The first run will take a while depending on your network and host speed, as it has to build the base image that is used to execute the code snippets.
+
+Once the repl service is initialized, this cog can be set up with `!set_repl http://localhost:5000/run`.
+
 #### FAQ
 Commands can be found within the `FaqManager.py` file.
 A Frequently Asked Questions (FAQ) document can be brought up with the various commands. In addition, it will link to a document which will be hosted on Google Drive and open to suggestions for all ECE members to contribute.
