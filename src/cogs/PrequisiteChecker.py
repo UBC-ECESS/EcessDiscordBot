@@ -118,6 +118,7 @@ class PrerequisiteChecker(commands.Cog):
 
     @staticmethod
     def _get_course_url(dept, course):
+        # TODO this might fail due to out-of-term stuff, monitor it
         return f"https://courses.students.ubc.ca/cs/courseschedule?pname=subjarea&tname=subj-course&dept={dept}&course={course}"
 
     async def _scrape_course_info(self, course):
