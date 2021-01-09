@@ -108,6 +108,7 @@ class PrerequisiteChecker(commands.Cog):
         em.add_field(
             name="Corequisites", inline=False, value=course_info["corequisites"]
         )
+        em.add_field(name="Credits", value=course_info["credits"])
         em.add_field(name="Description", inline=False, value=course_info["description"])
         await ctx.send(embed=em)
 
@@ -132,6 +133,10 @@ class PrerequisiteChecker(commands.Cog):
                     lambda predicate: predicate.name == "p"
                     and "Co-reqs:" in predicate.text
                 )
+                creds = soup.find(
+                    lambda predicate: predicate.name == "p"
+                    and "Credits:" in predicate.text
+                )
                 if not name:
                     return None
                 course_info = {
@@ -144,6 +149,9 @@ class PrerequisiteChecker(commands.Cog):
                     "corequisites": coreqs.text.replace("Co-reqs:", "").strip()
                     if coreqs
                     else "None",
+                    "credits": creds.text.replace("Credits:", "").strip()
+                    if creds
+                    else "Not found",
                 }
                 return course_info
         except Exception as e:
