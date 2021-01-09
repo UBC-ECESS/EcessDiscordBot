@@ -19,24 +19,36 @@ The bot is currently not live. The instructions are meant for testing on your lo
 3. Within the [Discord Developer Portal](https://discord.com/developers/applications), create a new application. Within the Settings panel, navigate to Bot to create a bot.
 4. Create a `secrets` directory, which will hold your private files. Within the `src/secrets` folder, create a `token.txt` file. Copy the token from the Build-A-Bot configuration into the `token.txt` file. Remember not to share your token with anyone.
 5. Within the `src/secrets` folder, create a `role_msg_id.txt` file. Enable [Developer Mode](https://discordia.me/en/developer-mode) on your server. Find the message you will be using to assign roles. Right-click and copy the message ID. Copy and paste the message ID into the `role_msg_id.txt` file.
-6. Invite the bot into your server through the Developer Portal.  
+6. Invite the bot into your server through the Developer Portal. This is found in the OAuth2 section of the Settings. Remember to put the bot on a higher privilege than the roles you are assigning.  
 7. Test the bot by navigating to `src` and running `python3 EcessClient.py`. The bot will be online when the console displays `Bot is ready!`.
 8. (Optional) To format your Python files, run `chmod +x fix_formatting.sh` to enable execute permissions. Proceed to run `./fix_formatting.sh`, which will run the [Black](https://github.com/psf/black) code formatter.
 
 ## Features
 ### Role Distribution
-The roles are currently mapped to the following emotes.
-These can be remapped within the `RoleDistributor.py` file. 
-- :red_car: -> 2nd Year
-- :blue_car: -> 3rd Year
-- :racing_car: -> 4th Year
 
-Roles will be assigned upon adding a reaction. Roles will be unassigned upon removing a reaction. Reactions consisting of emojis not included above will do nothing.
+Roles can be distributed arbitrarily and set up with the interactive mapper within the `RoleDistributor.py` file.
+
+To set up a new role distributor, initialize a new session with `!initialize_role_mapping <message_id> [options]`. To get the message ID, hold shift and click on the `ID` icon to the right of the message (make sure you have Developer Mode enabled). Currently, the only option supported is `unique`, which is a flag for this listener that the roles being assigned are unique (ie. only one role from that listener can be assigned to single user at a time).
+
+With the session started, add new mappings with `!add_role_mapping <emote> <role_id>`. Note that you can also mention the role in order to set up the mapping. Both custom and unicode emotes are supported.
+
+Once you're done, finalize the mapping with `!finalize_role_mapping`. This will clear all the reactions on the targeted message, and initialize the mapped reactions.
+
+#### Caveats
+
+- The channel with the role reacts must grant everyone the `Add Reactions` permission. The bot will handle removing reactions that aren't mapped.
+
+- If you delete a mapped message, remember to delete the mapping too (`!delete_role_mapping <message_id>`). There won't be an error, but you won't be able to map those roles again until you've removed the old listeners.
+
+- Roles are unique; you cannot map the same role to multiple listeners or emotes.
+
+- Mapping can only be done by the bot owner at this time (TODO)
+
 
 ### Commands
 #### Prerequisite Checking
 Commands can be found within the `PrerequisiteChecker.py` file.
-ECE/CS course prerequisites can be fetched through using the `!prereq` command with the selected course. For example, using `!prereq cpen333` will list the prerequisites for CPEN333 (System Software Engineering) as CPSC259 or CPEN223. Please ensure there are no spaces when providing the course input.
+ECE/CS course prerequisites can be fetched through using the `!prereq` command with the selected course. For example, using `!prereq cpen333` will list the prerequisites for CPEN333 (System Software Engineering) as CPSC259 or CPEN223. Please ensure there are no spaces when providing the course input. The courses supported can be found in `assets/ece-course-prereqs.csv`.
 
 #### Repl
 Commands can be found within the `Repl.py` file.
@@ -67,3 +79,6 @@ Please ensure privileged intents are enabled on the server. Otherwise, `guild.ge
 
 ### Unable to Find Message ID
 Please verify Developer Mode has been enabled on your server.
+
+### Permission Errors in Console
+Generally a 403 error. Ensure the bot privileges are higher than the roles being assigned, which can be adjusted in the server settings.
