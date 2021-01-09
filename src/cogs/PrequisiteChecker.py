@@ -51,14 +51,14 @@ class PrerequisiteChecker(commands.Cog):
         self.course_info_dict = course_info_dict
         self.session = aiohttp.ClientSession()
 
-    """
-    List the provided course's prerequisites and corequisites
-    :param arg: the course given as the argument
-    """
+    
 
     @commands.command()
     async def prereq(self, ctx, arg):
-
+        """
+        List the provided course's prerequisites and corequisites
+        :param arg: the course given as the argument
+        """
         # A lot of error checking and log messages
         # TODO make this error comment more detailed
         if not (7 <= len(arg) <= 8):
@@ -97,6 +97,10 @@ class PrerequisiteChecker(commands.Cog):
 
     @commands.command()
     async def courseinfo(self, ctx, course: CourseConverter):
+        """
+        Get a simplified view of the course info.
+        Make sure the course is capitalized with no spaces.
+        """
         course_info = await self._scrape_course_info(course)
         if course_info is None:
             return await ctx.send("Course not found.")
