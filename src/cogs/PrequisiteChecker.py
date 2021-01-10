@@ -14,7 +14,7 @@ class CourseConverter(commands.Converter):
     async def convert(self, ctx, argument):
         if len(argument) > 8:
             raise commands.errors.BadArgument
-        match = re.search(r"([A-Za-z]{4})([0-9]{3}[A-Za-z]{0,1})", argument)
+        match = re.search(r"\b([A-Za-z]{4})([0-9]{3}[A-Za-z]{0,1})\b", argument)
         if match:
             dept, course = match.groups()
             if not dept or not course:
