@@ -37,6 +37,7 @@ class Repl(commands.Cog):
 
     @commands.command()
     @commands.max_concurrency(2)
+    @commands.guild_only()
     async def repl(self, ctx, language: str, code: Code):
         """Run code. Supports java, python, and javascript (node) as the language parameter.
         Code parameter should be in a code block."""
