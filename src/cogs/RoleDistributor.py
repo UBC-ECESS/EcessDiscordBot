@@ -167,12 +167,15 @@ class RoleDistributor(commands.Cog):
         """
         Lists the role mapping to your internal console.
         """
-        print(self.role_mapping)
-        await ctx.send("Check your console output for the log.")
+        if len(str(self.role_mapping)) > 2000:
+            print(self.role_mapping)
+            await ctx.send("Output too long. Check your console output for the log.")
+        else:
+            await ctx.send(f"```{self.role_mapping}```")
 
     @commands.command()
     @commands.is_owner()
-    async def delete_role_mapping(self, ctx, message: discord.Message):
+    async def delete_role_mapping(self, ctx, message: str):
         """
         Deletes a role mapping.
         """
