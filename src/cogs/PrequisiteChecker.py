@@ -101,9 +101,11 @@ class PrerequisiteChecker(commands.Cog):
         """
         course_info = await self._scrape_course_info(course)
         if course_info is None:
+            course_info = await self._scrape_archive_course_info(course)
+        if course_info is None:
             return await ctx.send("Course not found.")
         em = discord.Embed(title=course_info["name"], url=course_info["url"])
-        em.set_footer(text="Always verify the results on the website.")
+        em.set_footer(text=course_info["footer"])
         em.add_field(
             name="Prerequisites", inline=False, value=course_info["prerequisites"]
         )
@@ -116,7 +118,6 @@ class PrerequisiteChecker(commands.Cog):
 
     @staticmethod
     def _get_course_url(dept, course):
-        # TODO this might fail due to out-of-term stuff, monitor it
         return f"https://courses.students.ubc.ca/cs/courseschedule?pname=subjarea&tname=subj-course&dept={dept}&course={course}"
 
     async def _scrape_course_info(self, course):
@@ -142,7 +143,7 @@ class PrerequisiteChecker(commands.Cog):
                 )
                 if not name:
                     return None
-                course_info = {
+                return {
                     "url": url,
                     "name": name.text.strip(),
                     "description": name.next_sibling.text.strip(),
@@ -155,8 +156,62 @@ class PrerequisiteChecker(commands.Cog):
                     "credits": creds.text.replace("Credits:", "").strip()
                     if creds
                     else "Not found",
+                    "footer": "Source: UBC Course Schedule",
                 }
-                return course_info
+        except Exception as e:
+            print(e)
+            return None
+
+    @staticmethod
+    def _get_course_archive_url(dept, course):
+        # Insecure site only since it doesn't look like UBC calendar works over TLS
+        return f"http://www.calendar.ubc.ca/vancouver/courses.cfm?page=code&code={dept}"
+
+    async def _scrape_archive_course_info(self, course):
+        url = self._get_course_archive_url(course["dept"], course["course"])
+        try:
+            async with self.session.get(url) as resp:
+                soup = BeautifulSoup(await resp.text(), "html.parser")
+                title = soup.find(
+                    lambda predicate: predicate.name == "dt"
+                    and all([c.upper() in predicate.text for c in course.values()])
+                )
+                if not title:
+                    return None
+                desc = title.find_next("dd")
+                credits, name, prereqs, coreqs, desc = (
+                    None,
+                    None,
+                    "None",
+                    "None",
+                    desc.text,
+                )
+                title_parse = re.search(
+                    r"(?:[\S\s]+?)\(([0-9]+?)\)([\S\s]+)", title.text
+                )
+                if not title_parse:
+                    return None
+                pres = re.search(r"(?:Prerequisite\:)([\S\s]+?\.)", desc)
+                cos = re.search(r"(?:Corequisite\:)([\S\s]+?\.)", desc)
+                credits, name = title_parse.groups()
+                desc = desc.replace(
+                    "This course is not eligible for Credit/D/Fail grading.", ""
+                )
+                if pres:
+                    prereqs = pres.group(1)
+                    desc = desc.replace(pres.group(0), "")
+                if cos:
+                    coreqs = cos.group(1)
+                    desc = desc.replace(cos.group(0), "")
+                return {
+                    "url": url,
+                    "name": f"{course['dept'].upper()} {course['course']} {name.strip()}",
+                    "description": desc.strip(),
+                    "prerequisites": prereqs.strip(),
+                    "corequisites": coreqs.strip(),
+                    "credits": str(credits),
+                    "footer": "Source: UBC Course Archive",
+                }
         except Exception as e:
             print(e)
             return None
