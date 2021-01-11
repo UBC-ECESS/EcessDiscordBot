@@ -179,10 +179,10 @@ class RoleDistributor(commands.Cog):
         """
         Deletes a role mapping.
         """
-        if str(message.id) not in self.role_mapping:
+        if str(message) not in self.role_mapping:
             return await ctx.send("That message doesn't have a registered listener.")
 
-        del self.role_mapping[str(message.id)]
+        del self.role_mapping[str(message)]
         self._write_json(self.role_mapping, self.role_mapping_file)
         await message.clear_reactions()
         await ctx.send("Done!")
