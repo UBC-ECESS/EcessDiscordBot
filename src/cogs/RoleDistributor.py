@@ -175,16 +175,20 @@ class RoleDistributor(commands.Cog):
 
     @commands.command()
     @commands.is_owner()
-    async def delete_role_mapping(self, ctx, message: str):
+    async def delete_role_mapping(
+        self, ctx, message: typing.Union[discord.Message, str]
+    ):
         """
         Deletes a role mapping.
         """
-        if str(message) not in self.role_mapping:
+        message_id = message if isinstance(message, str) else message.id
+        if str(message_id) not in self.role_mapping:
             return await ctx.send("That message doesn't have a registered listener.")
 
-        del self.role_mapping[str(message)]
+        del self.role_mapping[str(message_id)]
         self._write_json(self.role_mapping, self.role_mapping_file)
-        await message.clear_reactions()
+        if isinstance(message, discord.Message):
+            await message.clear_reactions()
         await ctx.send("Done!")
 
     @staticmethod
