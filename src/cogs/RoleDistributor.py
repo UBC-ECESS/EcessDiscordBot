@@ -236,7 +236,7 @@ class RoleDistributor(commands.Cog):
                             if str(r) != str(payload.emoji):
                                 await message.remove_reaction(r.emoji, member)
                     await member.add_roles(role)
-                    print("Role assigned!")
+                    print(f"Role {role} assigned to {member}!")
                 else:
                     print("Member not found, or role was invalid.")
             else:
@@ -268,7 +268,7 @@ class RoleDistributor(commands.Cog):
 
                 if member is not None and role is not None:
                     await member.remove_roles(role)
-                    print("Role removed!")
+                    print(f"Role {role} removed from {member}!")
                 else:
                     print("Member not found.")
 
