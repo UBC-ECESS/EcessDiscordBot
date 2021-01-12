@@ -1,18 +1,22 @@
 # ECESS Discord Bot
-A work in progress Discord bot to be deployed on the [Electrical and Computer Engineering Student Society](http://ubcecess.com/) (ECESS) server. 
+
+A Discord bot to be deployed on the [Electrical and Computer Engineering Student Society](http://ubcecess.com/) (ECESS) server. 
 
 The motivation to build a custom bot against using pre-built solutions (such as MEE6) stemmed from the lack of flexibility for additional features beyond role distribution.
 
 ## Progress
+
 The following features are currently supported:
 - Assigning roles from reaction messages
 - ECE FAQ commands
 - Prerequisite checker commands
 
 ## Architecture
-[Cogs](https://discordpy.readthedocs.io/en/latest/ext/commands/cogs.html) were used to create modules for each feature. The `EcessClient.py` file will load the available extensions in the `cogs` directory.
+
+[Cogs](https://discordpy.readthedocs.io/en/latest/ext/commands/cogs.html) were used to create modules for each feature. The `EcessClient.py` file will load the available extensions in the `cogs` directory. The bot is currently hosted on an AWS EC2 instance.
 
 ## Installation
+
 The bot is currently not live. The instructions are meant for testing on your local machine.
 1. Clone the repository.
 2. Ensure [Python](https://www.python.org/) is installed. Please also install the [discord.py](https://discordpy.readthedocs.io/en/latest/intro.html#installing) library and check `requirements.txt` file for additional library details. If possible, use a virtual environment when installing libraries.
@@ -47,6 +51,7 @@ Once you're done, finalize the mapping with `!finalize_role_mapping`. This will 
 
 ### Commands
 #### Prerequisite Checking
+
 Commands can be found within the `PrerequisiteChecker.py` file.
 ECE/CS course prerequisites can be fetched through using the `!prereq` command with the selected course. For example, using `!prereq cpen333` will list the prerequisites for CPEN333 (System Software Engineering) as CPSC259 or CPEN223. Please ensure there are no spaces when providing the course input. The courses supported can be found in `assets/ece-course-prereqs.csv`.
 
@@ -55,6 +60,7 @@ ECE/CS course prerequisites can be fetched through using the `!prereq` command w
 Course info can be attained with `!courseinfo <course>`. Note that the course structure should be DEPT### (case-insensitive). The command scrapes the UBC Course Schedule, so the data should be up-to-date. If it fails, use `!prereq <course>` instead.
 
 #### Repl
+
 Commands can be found within the `Repl.py` file.
 
 This command relies on an external service [[source](https://github.com/lcfyi/repl-api)]. By default, this cog will start uninitialized, and will require the owner of the bot to run `!set_repl <service_url>` to enable the functionality of the cog.
@@ -66,6 +72,7 @@ If desired, the above repo can be run locally where the bot is hosted. To get st
 Once the repl service is initialized, this cog can be set up with `!set_repl http://localhost:5000/run`.
 
 #### FAQ
+
 Commands can be found within the `FaqManager.py` file.
 A Frequently Asked Questions (FAQ) document can be brought up with the various commands. In addition, it will link to a document which will be hosted on Google Drive and open to suggestions for all ECE members to contribute.
 - `!programs`: Brings up program links for ECE, including MASc and MEng.
@@ -76,13 +83,17 @@ A Frequently Asked Questions (FAQ) document can be brought up with the various c
 
 ## Troubleshooting
 ### SSL Certificate Expiration on Windows
+
 The solution can be found on a Github issue comment [here](https://github.com/Rapptz/discord.py/issues/4159#issuecomment-640107584). Downloading and installing the certificate can be done from [here](https://crt.sh/?id=2835394). The download link can be explicitly found [here](https://beans-took-my-kids.reeee.ee/38qB2n.png).
 
 ### Member Not Found on Reaction Removal
+
 Please ensure privileged intents are enabled on the server. Otherwise, `guild.get_members` will not return the proper result.
 
 ### Unable to Find Message ID
+
 Please verify Developer Mode has been enabled on your server.
 
 ### Permission Errors in Console
+
 Generally a 403 error. Ensure the bot privileges are higher than the roles being assigned, which can be adjusted in the server settings.
