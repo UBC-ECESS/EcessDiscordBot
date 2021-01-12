@@ -57,7 +57,7 @@ ECE/CS course prerequisites can be fetched through using the `!prereq` command w
 
 #### Course Info
 
-Course info can be attained with `!courseinfo <course>`. Note that the course structure should be DEPT### (case-insensitive). The command scrapes the UBC Course Schedule, so the data should be up-to-date. If it fails, use `!prereq <course>` instead.
+Course info can be attained with `!courseinfo <course>`. Note that the course structure should be DEPT### (case-insensitive). The command scrapes the UBC Course Schedule, so the data should be up-to-date. If it fails, use `!prereq <course>` instead. If retrieval fails, the command will attempt to fetch the course from a cached version of the schedule.
 
 #### Repl
 
