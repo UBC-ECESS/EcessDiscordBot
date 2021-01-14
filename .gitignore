@@ -2,3 +2,4 @@ python_env
 secrets
 __pycache__
 .DS_Store
+assets/extra_commands.json

@@ -1,23 +1,9 @@
 """
 Commands to bring up FAQ resources
 """
-import discord
+import os
+import json
 from discord.ext import commands
-
-# Messages linking FAQs documents
-programs_msg = (
-    "CPEN: https://www.ece.ubc.ca/academic-programs/undergraduate/programs/computer-engineering-program \n"
-    "ELEC: https://www.ece.ubc.ca/academic-programs/undergraduate/programs/electrical-engineering-program \n"
-    "MASc/MEng: http://www.ece.ubc.ca/admissions/graduate/apply"
-)
-leetcode_msg = (
-    "LC Intro Guide: <https://docs.google.com/document/d/16BeYJzj_az-8Zv562RgZ0M_mxvCo6W6Thhc0D1oaNwE/edit?usp=sharing> \n"
-    "To bring up the Blind75 list, please use `!blind75`"
-)
-blind75_msg = "Blind75 LC List: <https://docs.google.com/spreadsheets/d/1O6lu-27mkdEfQAFfMB43vcqZRF57ygtJO2tCDw2ZQaY/edit?usp=sharing>"
-repo_msg = (
-    "ECESS Discord Bot's Github Repo: <https://github.com/kelvinkoon/ecess-discord-bot>"
-)
 
 
 class FaqManager(commands.Cog):
@@ -27,37 +13,89 @@ class FaqManager(commands.Cog):
 
     def __init__(self, client):
         self.client = client
+        default_commands_filepath = os.path.join(
+            client.bot_dir, "assets/default_commands.json"
+        )
+        self.extra_commands_filepath = os.path.join(
+            client.bot_dir, "assets/extra_commands.json"
+        )
+        self.custom_commands = {}
+
+        # Load the default commands
+        with open(default_commands_filepath, "r") as f:
+            commands = json.loads(f.read())
+            for command, metadata in commands.items():
+                self._faq_command_add(
+                    command, metadata["content"], metadata["description"]
+                )
+
+        # Load or initialize the custom commands
+        if os.path.exists(self.extra_commands_filepath):
+            with open(self.extra_commands_filepath, "r") as f:
+                self.custom_commands = json.loads(f.read())
+                for command, metadata in self.custom_commands.items():
+                    self._faq_command_add(
+                        command,
+                        metadata["content"],
+                        metadata.get("description", metadata["content"]),
+                    )
+        else:
+            self._write_json({}, self.extra_commands_filepath)
+
+    def _faq_command_add(self, name, content, description=None):
+        if description is None:
+            description = content
+
+        # We skip registering the command under this cog since it doesn't
+        # play nicely if it doesn't happen at class intiialization (especially
+        # for its interaction with the help menus). Thus it's unbounded.
+        command = commands.command(name=name)(self._faq_command(content, description))
+        return self.client.add_command(command)
+
+    def _faq_command_remove(self, name):
+        return self.client.remove_command(name)
+
+    @staticmethod
+    def _faq_command(content, description):
+        async def command(ctx):
+            await ctx.send(content)
+
+        command.__doc__ = f"{description[:40]}{'...' if len(description) > 40 else ''}"
+        return command
+
+    @staticmethod
+    def _write_json(payload, file):
+        with open(file, "w") as f:
+            json.dump(payload, f)
 
     @commands.command()
-    async def programs(self, ctx):
-        """
-        Bring up ECE program details
-        """
-        await ctx.send(programs_msg)
+    @commands.is_owner()
+    async def add(self, ctx, name, *, content):
+        """Adds a custom command."""
+        try:
+            self._faq_command_add(name, content)
+        except commands.errors.CommandRegistrationError:
+            return await ctx.send("Command name already exists. Try again.")
 
-
-    @commands.command()
-    async def leetcode(self, ctx):
-        """
-        Bring up the LeetCode Intro Prep Guide
-        """
-        await ctx.send(leetcode_msg)
-
-
-    @commands.command()
-    async def blind75(self, ctx):
-        """
-        Bring up the Blind75 LeetCode list
-        """
-        await ctx.send(blind75_msg)
-
+        # Since we pass the command uniqueness check above, we skip checking
+        # whether the command exists here and just overwrite it
+        self.custom_commands[name] = {
+            "description": content,
+            "content": content,
+        }
+        self._write_json(self.custom_commands, self.extra_commands_filepath)
+        await ctx.send(f"Command `{name}` added!")
 
     @commands.command()
-    async def repo(self, ctx):
-        """
-        Bring up the bot's Github repository
-        """
-        await ctx.send(repo_msg)
+    @commands.is_owner()
+    async def remove(self, ctx, name):
+        """Removes a custom command."""
+        if name not in self.custom_commands:
+            return await ctx.send("Command is not a custom command.")
+        self._faq_command_remove(name)
+        del self.custom_commands[name]
+        self._write_json(self.custom_commands, self.extra_commands_filepath)
+        await ctx.send(f"Command `{name}` removed!")
 
 
 def setup(client):
