@@ -16,6 +16,7 @@ def main():
 
     # Initialize the client
     client = commands.Bot(intents=intents, command_prefix="!")
+    client.bot_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
     @client.event
     async def on_ready():

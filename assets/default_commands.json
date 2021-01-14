@@ -1,0 +1,18 @@
+{
+  "programs": {
+    "description": "Bring up ECE program details",
+    "content": "CPEN: https://www.ece.ubc.ca/academic-programs/undergraduate/programs/computer-engineering-program \nELEC: https://www.ece.ubc.ca/academic-programs/undergraduate/programs/electrical-engineering-program \nMASc/MEng: http://www.ece.ubc.ca/admissions/graduate/apply"
+  },
+  "leetcode": {
+    "description": "Bring up the LeetCode Intro Prep Guide",
+    "content": "LC Intro Guide: <https://docs.google.com/document/d/16BeYJzj_az-8Zv562RgZ0M_mxvCo6W6Thhc0D1oaNwE/edit?usp=sharing> \nTo bring up the Blind75 list, please use `!blind75`"
+  },
+  "blind75": {
+    "description": "Bring up the Blind75 LeetCode list",
+    "content": "Blind75 LC List: <https://docs.google.com/spreadsheets/d/1O6lu-27mkdEfQAFfMB43vcqZRF57ygtJO2tCDw2ZQaY/edit?usp=sharing>"
+  },
+  "repo": {
+    "description": "Bring up the bot's Github repository",
+    "content": "ECESS Discord Bot's Github Repo: <https://github.com/kelvinkoon/ecess-discord-bot>"
+  }
+}
