@@ -74,12 +74,14 @@ Once the repl service is initialized, this cog can be set up with `!set_repl htt
 #### FAQ
 
 Commands can be found within the `FaqManager.py` file.
-A Frequently Asked Questions (FAQ) document can be brought up with the various commands. In addition, it will link to a document which will be hosted on Google Drive and open to suggestions for all ECE members to contribute.
+A Frequently Asked Questions (FAQ) document can be brought up with the various commands. In addition, it will link to a document which will be hosted on Google Drive and open to suggestions for all ECE members to contribute. The default commands are:
 - `!programs`: Brings up program links for ECE, including MASc and MEng.
 - `!interviews`: Brings up a self-written ECE interview prep guide, which is a WIP.
 - `!leetcode`: Brings up a self-written LeetCode introductory prep guide, which can be found [here](https://docs.google.com/document/d/16BeYJzj_az-8Zv562RgZ0M_mxvCo6W6Thhc0D1oaNwE/edit?usp=sharing).
 - `!blind75`: Brings up the Blind 75 LeetCode list, which can be found [here](https://docs.google.com/spreadsheets/d/1O6lu-27mkdEfQAFfMB43vcqZRF57ygtJO2tCDw2ZQaY/edit?usp=sharing).
 - `!repo`: Brings up the Github repository for the ECESS Discord Bot.
+
+New custom commands can be added with `!add <command> <content>`, which can be brought up by other members with `!<command>`. To remove that custom command, simply invoke `!remove <command>`.
 
 ## Troubleshooting
 ### SSL Certificate Expiration on Windows
