@@ -7,6 +7,8 @@ import os
 import traceback
 from discord.ext import commands
 
+from utils.FancyHelp import FancyHelp
+
 
 def main():
     # Enable privileged intents
@@ -80,6 +82,9 @@ def main():
     # Read the bot token within `secrets`
     token_file = open(os.path.join(bot_dir, "src/secrets/token.txt"))
     token = token_file.read()
+
+    # Inject a custom help
+    client.help_command = FancyHelp()
 
     # Run the client
     client.run(token)
