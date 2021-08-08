@@ -4,25 +4,11 @@ Commands to verify prerequisites for ECE/CS courses
 import discord
 from discord.ext import commands
 from bs4 import BeautifulSoup
+from utils.Converters import Course
 import csv
 import os
 import aiohttp
 import re
-
-
-class CourseConverter(commands.Converter):
-    async def convert(self, ctx, argument):
-        if len(argument) > 8:
-            raise commands.errors.BadArgument
-        match = re.search(r"\b([A-Za-z]{4})([0-9]{3}[A-Za-z]{0,1})\b", argument)
-        if match:
-            dept, course = match.groups()
-            if not dept or not course:
-                raise commands.errors.BadArgument
-            else:
-                return {"dept": dept, "course": course}
-        else:
-            raise commands.errors.BadArgument
 
 
 class PrerequisiteChecker(commands.Cog):
@@ -94,7 +80,7 @@ class PrerequisiteChecker(commands.Cog):
             await ctx.send("Course Not Found. Make sure input has no spaces.")
 
     @commands.command()
-    async def courseinfo(self, ctx, course: CourseConverter):
+    async def courseinfo(self, ctx, course: Course):
         """
         Get a simplified view of the course info.
         Make sure the course is in the form of DEPT### (case-insensitive).
@@ -120,14 +106,14 @@ class PrerequisiteChecker(commands.Cog):
     def _get_course_url(dept, course):
         return f"https://courses.students.ubc.ca/cs/courseschedule?pname=subjarea&tname=subj-course&dept={dept}&course={course}"
 
-    async def _scrape_course_info(self, course):
-        url = self._get_course_url(course["dept"], course["course"])
+    async def _scrape_course_info(self, course: Course):
+        url = self._get_course_url(course.dept, course.course)
         try:
             async with self.session.get(url) as resp:
                 soup = BeautifulSoup(await resp.text(), "html.parser")
                 name = soup.find(
                     lambda predicate: predicate.name == "h4"
-                    and all([c.upper() in predicate.text for c in course.values()])
+                    and all([c.upper() in predicate.text for c in {course.course, course.dept}])
                 )
                 prereqs = soup.find(
                     lambda predicate: predicate.name == "p"
@@ -167,14 +153,14 @@ class PrerequisiteChecker(commands.Cog):
         # Insecure site only since it doesn't look like UBC calendar works over TLS
         return f"http://www.calendar.ubc.ca/vancouver/courses.cfm?page=code&code={dept}"
 
-    async def _scrape_archive_course_info(self, course):
-        url = self._get_course_archive_url(course["dept"], course["course"])
+    async def _scrape_archive_course_info(self, course: Course):
+        url = self._get_course_archive_url(course.dept, course.course)
         try:
             async with self.session.get(url) as resp:
                 soup = BeautifulSoup(await resp.text(), "html.parser")
                 title = soup.find(
                     lambda predicate: predicate.name == "dt"
-                    and all([c.upper() in predicate.text for c in course.values()])
+                    and all([c.upper() in predicate.text for c in {course.course, course.dept}])
                 )
                 if not title:
                     return None
@@ -205,7 +191,7 @@ class PrerequisiteChecker(commands.Cog):
                     desc = desc.replace(cos.group(0), "")
                 return {
                     "url": url,
-                    "name": f"{course['dept'].upper()} {course['course']} {name.strip()}",
+                    "name": f"{course.dept} {course.course} {name.strip()}",
                     "description": desc.strip(),
                     "prerequisites": prereqs.strip(),
                     "corequisites": coreqs.strip(),
