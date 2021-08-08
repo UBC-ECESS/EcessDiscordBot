@@ -45,12 +45,16 @@ def main():
         ):
             # A fresh instance of HelpCommand is required since
             # we must manually pass the context here
-            help = commands.help.DefaultHelpCommand()
+            help = FancyHelp()
             help.context = ctx
             await ctx.send("Malformed arguments. Command help:")
-            await help.send_command_help(ctx.command)
+            await help.send_group_help(ctx.command)
         else:
-            print("".join(traceback.format_exception(type(error), error, error.__traceback__)))
+            print(
+                "".join(
+                    traceback.format_exception(type(error), error, error.__traceback__)
+                )
+            )
             await ctx.send(f"An error occured with the {ctx.command.name} command.")
 
     @client.command()

@@ -19,9 +19,11 @@ class FancyHelp(commands.MinimalHelpCommand):
         ).paginate(self.context)
 
     def get_command_signature(self, command: commands.Command):
+        """Overridden to wrap the command in a code block."""
         return f"`{super().get_command_signature(command)}`"
 
     def add_subcommand_formatting(self, command: commands.Command):
+        """Overridden to wrap the command in a code block."""
         fmt = "`{0}{1}` \N{EN DASH} {2}" if command.short_doc else "`{0}{1}`"
         self.paginator.add_line(
             fmt.format(
@@ -29,33 +31,39 @@ class FancyHelp(commands.MinimalHelpCommand):
             )
         )
 
-    def add_command_formatting(self, command: commands.Command):
-        if command.description:
-            self.paginator.add_line(command.description, empty=True)
-
-        signature = self.get_command_signature(command)
-        if command.aliases:
-            self.paginator.add_line(signature)
-            self.add_aliases_formatting(command.aliases)
-        else:
-            self.paginator.add_line(signature, empty=True)
-
-        if command.help:
-            try:
-                self.paginator.add_line(command.help, empty=True)
-            except RuntimeError:
-                for line in command.help.splitlines():
-                    self.paginator.add_line(line)
-                self.paginator.add_line()
-
     def add_aliases_formatting(self, aliases: List[str]):
+        """Overridden to wrap aliases in a code block."""
         self.paginator.add_line(
             f'**{self.aliases_heading}** {", ".join([f"`{alias}`" for alias in aliases])}',
             empty=True,
         )
 
     def add_bot_commands_formatting(self, commands: commands.Command, heading: str):
+        """Overridden to add the short description to the commands list."""
         if commands:
             joined: str = "\n".join(f"`{c.name}` - {c.short_doc}" for c in commands)
             self.paginator.add_line(f"\n__**{heading}**__")
             self.paginator.add_line(joined)
+
+    async def send_group_help(self, group):
+        """Overridden in order to handle both group and regular commands."""
+        self.add_command_formatting(group)
+
+        filtered = await self.filter_commands(
+            getattr(group, "commands", []), sort=self.sort_commands
+        )
+        if filtered:
+            note = self.get_opening_note()
+            if note:
+                self.paginator.add_line(note, empty=True)
+
+            self.paginator.add_line(f"**{self.commands_heading}**")
+            for command in filtered:
+                self.add_subcommand_formatting(command)
+
+            note = self.get_ending_note()
+            if note:
+                self.paginator.add_line()
+                self.paginator.add_line(note)
+
+        await self.send_pages()
