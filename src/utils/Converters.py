@@ -6,7 +6,7 @@ import re
 class Course:
     def __init__(self, *, dept: str, course: str):
         self._dept: str = dept.upper()
-        self._course: str = course
+        self._course: str = course.upper()
 
     @property
     def dept(self) -> str:

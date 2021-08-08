@@ -190,7 +190,9 @@ class CourseThreads(commands.Cog):
         ][str(course)]
         course_thread: discord.Thread = self.client.get_channel(course_thread_id)
         await course_thread.remove_user(ctx.author)
-        return await ctx.reply(f"Done! Removed you from {course_thread.mention}, whether you were in it or not.")
+        return await ctx.reply(
+            f"Done! Removed you from {course_thread.mention}, whether you were in it or not."
+        )
 
     @courses.command(aliases=["list", "l"])
     @commands.guild_only()
@@ -212,10 +214,14 @@ class CourseThreads(commands.Cog):
     @courses.command(aliases=["search", "s"])
     @commands.guild_only()
     async def search_courses(self, ctx: commands.Context, query: str):
+        """Searches the thread directory for a case-insensitive match."""
         search_results: List[str] = []
         for year_metadata in self.course_mappings.values():
             for course, channel_id in year_metadata[CURRENT_COURSES_KEY].items():
-                if query.lower() in course.lower():
+                if (
+                    query.lower() in course.lower()
+                    or query.lower() in course.replace(" ", "").lower()
+                ):
                     channel: discord.Thread = self.client.get_channel(channel_id)
                     if not channel:
                         search_results.append(
