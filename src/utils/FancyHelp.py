@@ -9,6 +9,10 @@ class FancyHelp(commands.MinimalHelpCommand):
     additional formatting using a custom paginator.
     """
 
+    def __init__(self, **options):
+        super().__init__(**options)
+        self.no_category = "Uncategorized"
+
     async def send_pages(self):
         help_lines: List[str] = []
         for page in self.paginator.pages:

@@ -160,9 +160,9 @@ class CourseThreads(commands.Cog):
         if ctx.invoked_subcommand is None:
             raise commands.errors.BadArgument
 
-    @courses.command()
+    @courses.command(name="join")
     @commands.guild_only()
-    async def join(self, ctx: commands.Context, course: Course):
+    async def join_course(self, ctx: commands.Context, course: Course):
         """
         Join a course thread, if it exists. Note that this is idempotent.
         """
@@ -177,9 +177,11 @@ class CourseThreads(commands.Cog):
             f"Done! Added you to {course_thread.mention}. You may want to change your notification settings for the thread."
         )
 
-    @courses.command()
+    @courses.command(name="leave")
     @commands.guild_only()
-    async def leave(self, ctx: commands.Context, course: Union[Course, None] = None):
+    async def leave_course(
+        self, ctx: commands.Context, course: Union[Course, None] = None
+    ):
         """
         Leave a course thread, if you're in it. Note that this is idempotent.
         """
@@ -194,7 +196,7 @@ class CourseThreads(commands.Cog):
             f"Done! Removed you from {course_thread.mention}, whether you were in it or not."
         )
 
-    @courses.command(aliases=["list", "l"])
+    @courses.command(name="list", aliases=["l"])
     @commands.guild_only()
     async def list_courses(self, ctx: commands.Context):
         """List all the courses that currently have a course thread."""
@@ -211,7 +213,7 @@ class CourseThreads(commands.Cog):
                     course_listing.append(f"  - `{course}`: {channel.mention}")
         await Paginator(title="Available Courses", entries=course_listing).paginate(ctx)
 
-    @courses.command(aliases=["search", "s"])
+    @courses.command(name="search", aliases=["s"])
     @commands.guild_only()
     async def search_courses(self, ctx: commands.Context, query: str):
         """Searches the thread directory for a case-insensitive match."""
