@@ -68,6 +68,32 @@ Commands can be found within the `Repl.py` file.
 
 This command relies on an external service [[source](https://github.com/lcfyi/repl-api)]. By default, this cog will start uninitialized, and will require the owner of the bot to run `!set_repl <service_url>` to enable the functionality of the cog.
 
+#### Course Threads
+
+Course threads take advantage of Discord's threads feature to create permanent threads per course.
+
+Admins can specify particular channels for course year levels as the base channel for the threads, which the bot will use to register the corresponding courses. For example, if we had the following channel list:
+
+```
+#1xx-courses
+#2xx-courses
+#3xx-courses
+```
+
+Admins can run the following commands:
+
+```
+!ct register 1 #1xx-courses
+!ct register 2 #2xx-courses
+!ct register 3 #3xx-courses
+```
+
+In order to register each channel for the year levels. Using this, we can spawn permanent threads (that are automatically unarchived by the bot if Discord archives it) for courses for years 1-3. For example, we can use `!ct create CPEN331` to create a new permanent thread for CPEN331.
+
+Users can then join the thread through the Discord UI, or by calling `!courses join CPEN331`.
+
+Note that these threads are intended to last forever -- that is, each thread should cover all offerings regardless of term. This is so that we keep the maximum thread count (active and archived) down so we don't hit Discord's theoretical limitations which, as of writing, has not been announced yet.
+
 ##### Running Locally
 
 If desired, the above repo can be run locally where the bot is hosted. To get started, install `docker` and `docker-compose`. Next, clone the [repo](https://github.com/lcfyi/repl-api) and initialize it by running `docker-compose up`. The first run will take a while depending on your network and host speed, as it has to build the base image that is used to execute the code snippets.
