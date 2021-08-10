@@ -3,6 +3,9 @@ from discord.ext import commands
 import re
 
 
+MAX_COURSE_STR_LENGTH = 8
+
+
 class Course:
     def __init__(self, *, dept: str, course: str):
         self._dept: str = dept.upper()
@@ -25,7 +28,7 @@ class Course:
 
     @classmethod
     async def convert(cls, ctx: commands.Context, argument: str) -> Course:
-        if len(argument) > 8:
+        if len(argument) > MAX_COURSE_STR_LENGTH:
             raise commands.errors.BadArgument
         match = re.search(r"\b([A-Za-z]{4})([0-9]{3}[A-Za-z]{0,1})\b", argument)
         if match:

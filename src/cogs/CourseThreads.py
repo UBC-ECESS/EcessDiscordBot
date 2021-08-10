@@ -57,6 +57,9 @@ class CourseThreads(commands.Cog):
         """
         Registers a base channel for courses. Note that registering a year is immutable;
         that is, once set and courses are created, it cannot be changed.
+
+        **Example(s)**
+          `[p]ct register 1 #some-channel` - registers #some-channel as the base thread for all 1xx level courses
         """
         try:
             int(year_level)
@@ -91,6 +94,9 @@ class CourseThreads(commands.Cog):
     async def create_new_thread(self, ctx: commands.Context, course: Course):
         """
         Creates a new thread for the given course. The course format should be in DEPT###.
+
+        **Example(s)**
+          `[p]ct create CPEN331` - creates a new thread for CPEN331
         """
         if course.year_level in self.course_mappings:
             if (
@@ -140,6 +146,9 @@ class CourseThreads(commands.Cog):
     async def delete_thread(self, ctx: commands.Context, course: Course):
         """
         Locks the thread for a given course. Try not to use it as it is relatively destructive.
+
+        **Example(s)**
+          `[p]ct delete CPEN331` - removes the thread mapping for CPEN331 and locks the thread
         """
         if not await self._does_course_exist(ctx, course):
             return
@@ -156,6 +165,8 @@ class CourseThreads(commands.Cog):
     async def courses(self, ctx: commands.Context):
         """
         Command group related to joining, leaving, and listing course threads.
+
+        Note that you could also manually join and leave a thread using Discord's UI.
         """
         if ctx.invoked_subcommand is None:
             raise commands.errors.BadArgument
@@ -165,6 +176,11 @@ class CourseThreads(commands.Cog):
     async def join_course(self, ctx: commands.Context, course: Course):
         """
         Join a course thread, if it exists. Note that this is idempotent.
+
+        Note that there isn't a space between the course and the code.
+
+        **Example(s)**
+          `[p]course join CPEN331` - joins the thread for CPEN331
         """
         if not await self._does_course_exist(ctx, course):
             return
@@ -184,6 +200,11 @@ class CourseThreads(commands.Cog):
     ):
         """
         Leave a course thread, if you're in it. Note that this is idempotent.
+
+        Note that there isn't a space between the course and the code.
+
+        **Example(s)**
+          `[p]course leave CPEN331` - leaves the thread for CPEN331
         """
         if not await self._does_course_exist(ctx, course):
             return
@@ -199,7 +220,12 @@ class CourseThreads(commands.Cog):
     @courses.command(name="list", aliases=["l"])
     @commands.guild_only()
     async def list_courses(self, ctx: commands.Context):
-        """List all the courses that currently have a course thread."""
+        """
+        List all the courses that currently have a course thread.
+
+        **Example(s)**
+          `[p]course list` - lists all the courses that currently have a thread
+        """
         course_listing: List[str] = []
         for year, year_metadata in self.course_mappings.items():
             course_listing.append(f"**Level `{year}xx`**")
@@ -211,12 +237,20 @@ class CourseThreads(commands.Cog):
                     )
                 else:
                     course_listing.append(f"  - `{course}`: {channel.mention}")
-        await Paginator(title="Available Courses", entries=course_listing).paginate(ctx)
+        await Paginator(
+            title="Available Courses", entries=course_listing, entries_per_page=25
+        ).paginate(ctx)
 
     @courses.command(name="search", aliases=["s"])
     @commands.guild_only()
     async def search_courses(self, ctx: commands.Context, query: str):
-        """Searches the thread directory for a case-insensitive match."""
+        """
+        Searches the thread directory for a case-insensitive match.
+
+        **Example(s)**
+          `[p]course search CPEN` - returns all threads that have CPEN (case-insensitive) in its title
+          `[p]course search 331` - returns all threads that have 331 in its title
+        """
         search_results: List[str] = []
         for year_metadata in self.course_mappings.values():
             for course, channel_id in year_metadata[CURRENT_COURSES_KEY].items():

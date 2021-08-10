@@ -2,6 +2,8 @@ from typing import List
 from discord.ext import commands
 from utils.Paginator import Paginator
 
+SHORT_DOC_PREFIX_REPLACEMENT = "[p]"
+
 
 class FancyHelp(commands.MinimalHelpCommand):
     """
@@ -26,12 +28,40 @@ class FancyHelp(commands.MinimalHelpCommand):
         """Overridden to wrap the command in a code block."""
         return f"`{super().get_command_signature(command)}`"
 
+    def _replace_prefix_placeholder(self, content: str):
+        return (content or "").replace(
+            SHORT_DOC_PREFIX_REPLACEMENT, self.context.clean_prefix
+        )
+
+    def add_command_formatting(self, command):
+        """Overridden to replace the short_doc."""
+        if command.description:
+            self.paginator.add_line(command.description, empty=True)
+
+        signature = self.get_command_signature(command)
+        if command.aliases:
+            self.paginator.add_line(signature)
+            self.add_aliases_formatting(command.aliases)
+        else:
+            self.paginator.add_line(signature, empty=True)
+
+        if command.help:
+            help_str = self._replace_prefix_placeholder(command.help)
+            try:
+                self.paginator.add_line(help_str, empty=True)
+            except RuntimeError:
+                for line in help_str.splitlines():
+                    self.paginator.add_line(line)
+                self.paginator.add_line()
+
     def add_subcommand_formatting(self, command: commands.Command):
-        """Overridden to wrap the command in a code block."""
+        """Overridden to wrap the command in a code block and also replace the short_doc."""
         fmt = "`{0}{1}` \N{EN DASH} {2}" if command.short_doc else "`{0}{1}`"
         self.paginator.add_line(
             fmt.format(
-                self.context.clean_prefix, command.qualified_name, command.short_doc
+                self.context.clean_prefix,
+                command.qualified_name,
+                self._replace_prefix_placeholder(command.short_doc),
             )
         )
 
@@ -43,13 +73,16 @@ class FancyHelp(commands.MinimalHelpCommand):
         )
 
     def add_bot_commands_formatting(self, commands: commands.Command, heading: str):
-        """Overridden to add the short description to the commands list."""
+        """Overridden to add the short description to the commands list and also to replace the short_doc."""
         if commands:
-            joined: str = "\n".join(f"`{c.name}` - {c.short_doc}" for c in commands)
+            joined: str = "\n".join(
+                f"`{c.name}` - {self._replace_prefix_placeholder(c.short_doc)}"
+                for c in commands
+            )
             self.paginator.add_line(f"\n__**{heading}**__")
             self.paginator.add_line(joined)
 
-    async def send_group_help(self, group):
+    async def send_group_help(self, group: commands.Group):
         """Overridden in order to handle both group and regular commands."""
         self.add_command_formatting(group)
 
