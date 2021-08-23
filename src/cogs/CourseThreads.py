@@ -289,13 +289,21 @@ class CourseThreads(commands.Cog):
                     for channel_id in year_metadata[CURRENT_COURSES_KEY].values()
                 ]
                 for thread_id in thread_ids:
-                    thread: discord.Thread = self.client.get_channel(thread_id)
+                    thread: Union[discord.Thread, None] = self.client.get_channel(
+                        thread_id
+                    )
+                    # If the thread was archived and purged from the bot's cache, the
+                    # getter will return None and we'll have to make an API call
+                    if thread is None:
+                        thread: discord.Thread = await self.client.fetch_channel(
+                            thread_id
+                        )
                     if thread.archived:
                         await thread.edit(
                             archived=False, auto_archive_duration=AUTO_ARCHIVE_DURATION
                         )
-        except Exception:
-            pass  # Silently fail
+        except Exception as e:
+            print("Thread refresher error:", e)
 
 
 def setup(client: commands.Bot):
