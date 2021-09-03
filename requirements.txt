@@ -1,4 +1,4 @@
-git+git://github.com/Rapptz/discord.py@58ca9e99325ac2678a51cd63afd7ae917f14bc8d
+git+git://github.com/Rapptz/discord.py@45d498c1b76deaf3b394d17ccf56112fa691d160
 black==20.8b1
 aiohttp>=3.6.0,<3.7.0
 beautifulsoup4==4.9.3
