@@ -76,8 +76,10 @@ class CourseThreads(commands.Cog):
         await channel.set_permissions(
             ctx.guild.default_role,
             send_messages=False,
-            use_private_threads=False,
-            use_threads=True,
+            create_public_threads=False,
+            create_private_threads=False,
+            send_messages_in_threads=True,
+            manage_threads=False,
         )
         self.course_mappings[year_level] = {
             BASE_CHANNEL_KEY: channel.id,
