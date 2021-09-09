@@ -113,7 +113,7 @@ class CourseThreads(commands.Cog):
             base_message: discord.Message = await base_channel.send(
                 f"Thread for `{course}`"
             )
-            created_thread: discord.Thread = await base_message.start_thread(
+            created_thread: discord.Thread = await base_message.create_thread(
                 name=str(course)
             )
             self.course_mappings[course.year_level][CURRENT_COURSES_KEY][
