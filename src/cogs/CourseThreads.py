@@ -239,6 +239,8 @@ class CourseThreads(commands.Cog):
                     )
                 else:
                     course_listing.append(f"  - `{course}`: {channel.mention}")
+        if not course_listing:
+            return await ctx.reply("No courses found.")
         await Paginator(
             title="Available Courses", entries=course_listing, entries_per_page=25
         ).paginate(ctx)
@@ -297,13 +299,46 @@ class CourseThreads(commands.Cog):
                     # If the thread was archived and purged from the bot's cache, the
                     # getter will return None and we'll have to make an API call
                     if thread is None:
-                        thread: discord.Thread = await self.client.fetch_channel(
-                            thread_id
-                        )
-                    if thread.archived:
-                        await thread.edit(
-                            archived=False, auto_archive_duration=AUTO_ARCHIVE_DURATION
-                        )
+                        try:
+                            thread: discord.Thread = await self.client.fetch_channel(
+                                thread_id
+                            )
+                            if thread.archived:
+                                await thread.edit(
+                                    archived=False,
+                                    auto_archive_duration=AUTO_ARCHIVE_DURATION,
+                                )
+                        except discord.errors.NotFound:
+                            # Thrown if the thread isn't found, which should only happen
+                            # if the thread was manually deleted; clean this thread up
+
+                            # NOTE: this should _rarely_ be called. It's a user error if
+                            # we ever get to this catch, but we do this defensively.
+                            # Also, since it shouldn't get called at all, it's extremely inefficient
+                            target_year_level: Union[None, str] = None
+                            target_course: Union[None, str] = None
+                            for (
+                                year_level,
+                                year_metadata,
+                            ) in self.course_mappings.items():
+                                for course, course_thread_id in year_metadata[
+                                    CURRENT_COURSES_KEY
+                                ].items():
+                                    if course_thread_id == thread_id:
+                                        target_year_level = year_level
+                                        target_course = course
+                                        break
+                                if target_year_level and target_course:
+                                    break
+                            del self.course_mappings[target_year_level][
+                                CURRENT_COURSES_KEY
+                            ][target_course]
+                            write_json(
+                                THREADS_CONFIG_FILENAME,
+                                self.course_mappings,
+                            )
+                            continue
+
         except Exception as e:
             print("Thread refresher error:", e)
 
