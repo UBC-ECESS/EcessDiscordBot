@@ -303,11 +303,6 @@ class CourseThreads(commands.Cog):
                             thread: discord.Thread = await self.client.fetch_channel(
                                 thread_id
                             )
-                            if thread.archived:
-                                await thread.edit(
-                                    archived=False,
-                                    auto_archive_duration=AUTO_ARCHIVE_DURATION,
-                                )
                         except discord.errors.NotFound:
                             # Thrown if the thread isn't found, which should only happen
                             # if the thread was manually deleted; clean this thread up
@@ -339,6 +334,12 @@ class CourseThreads(commands.Cog):
                             )
                             continue
 
+                    if thread.archived:
+                        print(f"Unarchived thread with thread ID: {thread_id}, name: {thread.name}")
+                        await thread.edit(
+                            archived=False,
+                            auto_archive_duration=AUTO_ARCHIVE_DURATION,
+                        )
         except Exception as e:
             print("Thread refresher error:", e)
 
