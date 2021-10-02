@@ -94,6 +94,31 @@ Users can then join the thread through the Discord UI, or by calling `!courses j
 
 Note that these threads are intended to last forever -- that is, each thread should cover all offerings regardless of term. This is so that we keep the maximum thread count (active and archived) down so we don't hit Discord's theoretical limitations which, as of writing, has not been announced yet.
 
+#### Thread Manager
+
+This is a general cog that makes it easier to keep persistent threads going (ie. the thread will be automatically unarchived by the bot when Discord auto-archives it).
+
+To use it, simply get the thread ID or tag the thread like so:
+
+```
+!threads pin <#thread_id>
+!t p <#thread_id> (alias)
+```
+
+And to unpin it:
+
+```
+!threads unpin <#thread_id>
+!t u <#thread_id> (alias)
+```
+
+Finally, to check which threads are pinned in the current guild:
+
+```
+!threads list
+!t l (alias)
+```
+
 ##### Running Locally
 
 If desired, the above repo can be run locally where the bot is hosted. To get started, install `docker` and `docker-compose`. Next, clone the [repo](https://github.com/lcfyi/repl-api) and initialize it by running `docker-compose up`. The first run will take a while depending on your network and host speed, as it has to build the base image that is used to execute the code snippets.
