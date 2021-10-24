@@ -75,6 +75,13 @@ def main():
         """
         client.unload_extension(f"cogs.{extension}")
 
+    @client.before_invoke
+    async def before_command_invoke(ctx: commands.Context):
+        """
+        Command logging.
+        """
+        print(f"Command invoked: {ctx.command} by {ctx.author} with message {ctx.message.content}")
+
     # Parent directory of the bot repo; constructed as parentDir(fileDir(file))
     bot_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
