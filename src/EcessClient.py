@@ -5,12 +5,15 @@ Please ensure `secrets/token.txt` contains the bot's token.
 import discord
 import os
 import traceback
+import logging
 from discord.ext import commands
 
 from utils.FancyHelp import FancyHelp
 
 
 def main():
+    logging.basicConfig(level=logging.INFO)
+
     # Enable privileged intents
     # Certain methods (eg. `guild.get_members`) require privileged intents
     intents = discord.Intents.default()
