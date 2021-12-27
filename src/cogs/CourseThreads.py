@@ -437,7 +437,7 @@ class CourseThreads(commands.Cog):
             course_thread: discord.Thread = await self._get_course_thread(course)
             await course_thread.add_user(ctx.author)
 
-        await ctx.reply("Done processing!")
+        await ctx.reply("Done processing! You are now free to delete your uploaded file (if you wish).")
 
     @tasks.loop(seconds=1)
     async def thread_refresher_task(self):
