@@ -424,6 +424,7 @@ class CourseThreads(commands.Cog):
                 else ""
             )
             + "\n\n***Does that look right?*** If it doesn't, feel free to try the command again."
+            + "\nNOTE: some online courses may not be included in your schedule."
         )
         await status_message.edit(
             status_message_str,
