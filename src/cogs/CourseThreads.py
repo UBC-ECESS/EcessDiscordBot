@@ -417,12 +417,13 @@ class CourseThreads(commands.Cog):
                 + ", ".join([f"`{course}`" for course in unparsed_courses])
             )
             + (
-                "Nothing"
+                "\nNothing\n"
                 if not confirmed_courses
                 and not invalid_courses
                 and not unparsed_courses
                 else ""
             )
+            + "\n*Does that look right?* If it doesn't, feel free to try the command again."
         )
         await status_message.edit(
             status_message_str,
@@ -437,7 +438,9 @@ class CourseThreads(commands.Cog):
             course_thread: discord.Thread = await self._get_course_thread(course)
             await course_thread.add_user(ctx.author)
 
-        await ctx.reply("Done processing! You are now free to delete your uploaded file (if you wish).")
+        await ctx.reply(
+            "Done processing! You are now free to delete your uploaded file (if you wish)."
+        )
 
     @tasks.loop(seconds=1)
     async def thread_refresher_task(self):
