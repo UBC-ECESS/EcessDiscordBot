@@ -1,3 +1,4 @@
+import logging
 from typing import Dict, Optional
 from utils.Converters import Course
 from bs4 import BeautifulSoup
@@ -54,7 +55,7 @@ async def scrape_course_info(
                 "footer": "Source: UBC Course Schedule",
             }
     except Exception as e:
-        print(e)
+        logging.error(e)
         return None
     finally:
         if should_close:
@@ -118,7 +119,7 @@ async def scrape_archive_course_info(
                 "footer": "Source: UBC Course Archive",
             }
     except Exception as e:
-        print(e)
+        logging.error(e)
         return None
     finally:
         if should_close:

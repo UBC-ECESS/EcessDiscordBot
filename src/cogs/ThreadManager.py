@@ -1,3 +1,4 @@
+import logging
 from typing import Dict, Union, List
 import discord
 from discord.ext import commands, tasks
@@ -152,7 +153,7 @@ class ThreadManager(commands.Cog):
                             continue
 
                     if thread.archived:
-                        print(
+                        logging.info(
                             f"Unarchived thread with thread ID: {thread_id}, name: {thread.name}"
                         )
                         await thread.edit(
@@ -160,7 +161,7 @@ class ThreadManager(commands.Cog):
                             auto_archive_duration=AUTO_ARCHIVE_DURATION,
                         )
         except Exception as e:
-            print("Thread manager refresher error:", e)
+            logging.info(f"Thread manager refresher error: {e}")
 
 
 def setup(client: commands.Bot):

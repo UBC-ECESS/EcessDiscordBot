@@ -3,3 +3,5 @@ secrets
 __pycache__
 .DS_Store
 assets/extra_commands.json
+bot_info.log
+venv/

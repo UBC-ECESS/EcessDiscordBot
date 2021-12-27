@@ -1,4 +1,5 @@
 import asyncio
+import logging
 from typing import Dict, Any, Optional, Set, Tuple, Union, List
 import discord
 from io import BytesIO
@@ -353,8 +354,7 @@ class CourseThreads(commands.Cog):
                     + f"Found {len(found_courses_raw)}: {', '.join([f'`{course}`' for course in found_courses_raw])}"
                 )
 
-                # "Logging"
-                print(status_message_str)
+                logging.info(status_message_str)
 
                 return await status_message.edit(
                     status_message_str,
@@ -431,8 +431,7 @@ class CourseThreads(commands.Cog):
             ),
         )
 
-        # "Logging"
-        print(status_message_str)
+        logging.info(status_message_str)
 
         for course in confirmed_courses:
             course_thread: discord.Thread = await self._get_course_thread(course)
@@ -497,7 +496,7 @@ class CourseThreads(commands.Cog):
                             continue
 
                     if thread.archived:
-                        print(
+                        logging.info(
                             f"Unarchived thread with thread ID: {thread_id}, name: {thread.name}"
                         )
                         await thread.edit(
@@ -505,7 +504,7 @@ class CourseThreads(commands.Cog):
                             auto_archive_duration=AUTO_ARCHIVE_DURATION,
                         )
         except Exception as e:
-            print("Thread refresher error:", e)
+            logging.error(f"Thread refresher error: {e}")
 
 
 def setup(client: commands.Bot):
