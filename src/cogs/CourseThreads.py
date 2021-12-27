@@ -417,13 +417,13 @@ class CourseThreads(commands.Cog):
                 + ", ".join([f"`{course}`" for course in unparsed_courses])
             )
             + (
-                "\nNothing\n"
+                "\nNothing"
                 if not confirmed_courses
                 and not invalid_courses
                 and not unparsed_courses
                 else ""
             )
-            + "\n*Does that look right?* If it doesn't, feel free to try the command again."
+            + "\n\n***Does that look right?*** If it doesn't, feel free to try the command again."
         )
         await status_message.edit(
             status_message_str,
