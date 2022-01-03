@@ -351,12 +351,15 @@ class CourseThreads(commands.Cog):
 
         # Pre-checks to see if the user wants to continue
         if not confirmation_view.interacted:
-            return await status_message.edit("Timed out. Cancelling.", view=None)
+            return await status_message.edit(
+                "Timed out. Cancelling.", view=confirmation_view
+            )
         if not confirmation_view.intr_continue:
-            return await status_message.edit("Interaction cancelled.", view=None)
+            return await status_message.edit(
+                "Interaction cancelled.", view=confirmation_view
+            )
 
-        # User wants to continue. Remove the buttons so the user doesn't get failed interactions after the first
-        await status_message.edit(view=None)
+        await status_message.edit(view=confirmation_view)
 
         status_webhook: discord.WebhookMessage = (
             await confirmation_view.followup_webhook.send(
@@ -428,9 +431,8 @@ class CourseThreads(commands.Cog):
                         confirmed_courses.add(course)
 
         status_message_str: str = (
-            "**Here's what I found**\n"
-            + (
-                f"\n__You can be added to the following course threads__\n"
+            (
+                f"\n**You can be added to the following course threads**\n"
                 + (
                     ", ".join([f"`{course}`" for course in confirmed_courses])
                     if confirmed_courses
@@ -438,7 +440,7 @@ class CourseThreads(commands.Cog):
                 )
             )
             + (
-                "\n__These courses could not be found in UBC's course schedule [1]__\n"
+                "\n**These courses could not be found in UBC's course schedule [1]**\n"
                 + (
                     ", ".join([f"`{course}`" for course in invalid_courses])
                     if invalid_courses
@@ -446,7 +448,7 @@ class CourseThreads(commands.Cog):
                 )
             )
             + (
-                "\n__These courses could not be parsed__\n"
+                "\n**These courses could not be parsed**\n"
                 + (
                     ", ".join([f"`{course}`" for course in unparsed_courses])
                     if unparsed_courses
@@ -462,24 +464,52 @@ class CourseThreads(commands.Cog):
         # At this point, the threads will be created but we'll still give the user the option to cancel
         # We can afford to wait here since we're no longer holding the modification lock
         final_confirmation_view: discord.ui.View = ConfirmationView(ctx.author)
+        course_selection_view: discord.ui.Select = discord.ui.Select(
+            placeholder="Select courses to be added to...",
+            min_values=0,
+            max_values=len(confirmed_courses),
+            options=[
+                discord.SelectOption(label=str(course)) for course in confirmed_courses
+            ],
+        )
+
+        final_confirmation_view.add_item(course_selection_view)
+
         status_message: discord.Message = await status_webhook.edit(
             status_message_str,
             view=final_confirmation_view,
         )
         await final_confirmation_view.wait()
+        final_confirmation_view.remove_item(course_selection_view)
 
         if not final_confirmation_view.interacted:
-            return await status_webhook.edit("Timed out. Cancelling.", view=None)
+            return await status_webhook.edit(
+                "Timed out. Cancelling.", view=final_confirmation_view
+            )
         if not final_confirmation_view.intr_continue:
-            return await status_webhook.edit("Interaction cancelled.", view=None)
+            return await status_webhook.edit(
+                "Interaction cancelled.", view=final_confirmation_view
+            )
+
+        # Recreate the Course objects since we can only retrieve primitives from the select
+        final_course_list: List[Course] = [
+            Course.parse(course) for course in course_selection_view.values
+        ]
 
         await status_webhook.edit(
-            content=status_message_str + "\n\nConfirmed. Processing...", view=None
+            content=status_message_str
+            + "\n\n**You'll be added to the following courses**\n"
+            + (
+                ", ".join([f"`{course}`" for course in final_course_list])
+                if final_course_list
+                else "`None`"
+            ),
+            view=final_confirmation_view,
         )
 
         # Create the threads that we found were valid earlier
         async with self.course_modification_lock:
-            for course in confirmed_courses:
+            for course in final_course_list:
                 # Filter out courses that already have threads
                 if self._does_course_exist(course)[1]:
                     continue
@@ -495,7 +525,7 @@ class CourseThreads(commands.Cog):
                     )
 
         # Finally, add the user
-        for course in confirmed_courses:
+        for course in final_course_list:
             course_thread: discord.Thread = await self._get_course_thread(course)
             # Technically, we could run into issues if the thread gets deleted while
             # we're iterating, but we won't lock this because it's prone to rate limits
