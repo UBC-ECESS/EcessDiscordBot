@@ -4,7 +4,7 @@ from discord.ext import commands
 import re
 
 
-MAX_COURSE_STR_LENGTH = 8
+MAX_COURSE_STR_LENGTH = 9
 
 
 class Course:
@@ -29,7 +29,7 @@ class Course:
 
     @classmethod
     def parse(cls, raw: str) -> Optional[Course]:
-        match = re.search(r"\b([A-Za-z]{4})([0-9]{3}[A-Za-z]{0,1})\b", raw)
+        match = re.search(r"\b([A-Za-z]{4})(?:\s*)([0-9]{3}[A-Za-z]{0,1})\b", raw)
         if not match:
             return None
         dept, course = match.groups()
