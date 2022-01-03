@@ -32,3 +32,28 @@ class ConfirmationView(discord.ui.View):
 
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
         return interaction.user.id == self.invoking_user.id
+
+    def add_item(self, item: discord.ui.Item) -> None:
+        """
+        Add an item to the view, making sure that the confirmation buttons are always last.
+        """
+        cancel_button: discord.ui.Item = self.children[-1]
+        continue_button: discord.ui.Item = self.children[-2]
+        self.remove_item(cancel_button)
+        self.remove_item(continue_button)
+        super().add_item(item)
+        super().add_item(continue_button)
+        super().add_item(cancel_button)
+
+    def stop(self) -> None:
+        """
+        Stops this confirmation view and removes its listeners. Note that the original message
+        with this view should be edited or modified to resend this in order to reflect the disabled
+        components in the client's view.
+        """
+        super().stop()
+        for child in self.children:
+            # Future items may not have a disabled attribute
+            # Use a guard to prevent errors in the future
+            if hasattr(child, "disabled"):
+                child.disabled = True
