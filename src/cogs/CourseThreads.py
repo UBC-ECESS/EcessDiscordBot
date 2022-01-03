@@ -430,29 +430,28 @@ class CourseThreads(commands.Cog):
         status_message_str: str = (
             "**Here's what I found**\n"
             + (
-                ""
-                if not confirmed_courses
-                else f"\n__You can be added to the following course threads__\n"
-                + ", ".join([f"`{course}`" for course in confirmed_courses])
+                f"\n__You can be added to the following course threads__\n"
+                + (
+                    ", ".join([f"`{course}`" for course in confirmed_courses])
+                    if confirmed_courses
+                    else "`None`"
+                )
             )
             + (
-                ""
-                if not invalid_courses
-                else "\n__These courses could not be found in UBC's course schedule__ [1]\n"
-                + ", ".join([f"`{course}`" for course in invalid_courses])
+                "\n__These courses could not be found in UBC's course schedule [1]__\n"
+                + (
+                    ", ".join([f"`{course}`" for course in invalid_courses])
+                    if invalid_courses
+                    else "`None`"
+                )
             )
             + (
-                ""
-                if not unparsed_courses
-                else "\n__These courses could not be parsed__\n"
-                + ", ".join([f"`{course}`" for course in unparsed_courses])
-            )
-            + (
-                "\n`Nothing`"
-                if not confirmed_courses
-                and not invalid_courses
-                and not unparsed_courses
-                else ""
+                "\n__These courses could not be parsed__\n"
+                + (
+                    ", ".join([f"`{course}`" for course in unparsed_courses])
+                    if unparsed_courses
+                    else "`None`"
+                )
             )
             + "\n\n**Does that look right?** If it doesn't, feel free to cancel and try the command again."
             + "\n**NOTE:** Some online courses may not be included in your schedule."
@@ -474,7 +473,9 @@ class CourseThreads(commands.Cog):
         if not final_confirmation_view.intr_continue:
             return await status_webhook.edit("Interaction cancelled.", view=None)
 
-        await status_webhook.edit(view=None)
+        await status_webhook.edit(
+            content=status_message_str + "\n\nConfirmed. Processing...", view=None
+        )
 
         # Create the threads that we found were valid earlier
         async with self.course_modification_lock:
@@ -497,9 +498,11 @@ class CourseThreads(commands.Cog):
         for course in confirmed_courses:
             course_thread: discord.Thread = await self._get_course_thread(course)
             # Technically, we could run into issues if the thread gets deleted while
-            # we're iterating, but we won't lock this because it's prone to user-bucketed
-            # rate limits so it's better to let the error bubble up here
-            await course_thread.add_user(ctx.author)
+            # we're iterating, but we won't lock this because it's prone to rate limits
+
+            # Also, we'll ping to add the user since the message rate limit is much more
+            # generous than the channel edit one (which course_thread.add_user({user}) falls under)
+            await course_thread.send(f"Welcome, {ctx.author.mention}!")
 
         await final_confirmation_view.followup_webhook.send(
             "Done. Best of luck!", ephemeral=is_guild
