@@ -1,10 +1,12 @@
 import asyncio
 import logging
 from typing import Dict, Any, Optional, Set, Tuple, Union, List
+import aiohttp
 import discord
 from io import BytesIO
 from discord.ext import commands, tasks
-from utils.UBCCourseInfo import scrape_archive_course_info, scrape_course_info
+from utils.Components import ConfirmationView
+from utils.UBCCourseInfo import scrape_course_info
 from utils.Converters import Course
 from utils.JsonTools import read_json, write_json
 from utils.Checks import ban_members_check
@@ -43,6 +45,7 @@ class CourseThreads(commands.Cog):
     def __init__(self, client: commands.Bot):
         self.client: commands.Bot = client
         self.course_mappings: Dict[str, Any] = read_json(THREADS_CONFIG_FILENAME)
+        self.session = aiohttp.ClientSession()
         self.course_modification_lock = asyncio.Lock()
         self.thread_refresher_task.start()
 
@@ -312,23 +315,57 @@ class CourseThreads(commands.Cog):
         """
         Imports courses from a user-provided `.ics` file. Max of 15 courses at a time.
         Note that you must leave your old courses manually.
+        Response messages will be ephemeral unless you DM the bot.
 
         The parser iterates through the file to search for `SUMMARY:{DEPT} {CODE}` strings.
 
         **Example**
           `[p]course import` (with attachment) - imports courses from the attachment
         """
-        status_message: discord.Message = await ctx.reply("Processing...")
+        logging.info(f"Import invoked by {ctx.author}, in guild: {ctx.guild}")
+        required_attachments: int = 1
+        is_guild: bool = True if ctx.guild else False
+        if len(ctx.message.attachments) != required_attachments:
+            await ctx.reply(
+                f"Make sure your message has exactly **{required_attachments}** attachment. "
+                + f"I found **{len(ctx.message.attachments)}**."
+            )
+            if is_guild:
+                await ctx.message.delete()
+            return
+
+        # Save the file in-memory so we can delete the user's message
+        calendar_file: BytesIO = BytesIO()
+        await ctx.message.attachments[0].save(calendar_file)
+
+        # Use buttons to begin interaction workflow with the user
+        confirmation_view: discord.ui.View = ConfirmationView(ctx.author)
+        status_message: discord.Message = await ctx.reply(
+            f"Attachment saved{'' if is_guild else ' and deleted your original message'}. "
+            + "Use the buttons to continue or cancel.",
+            view=confirmation_view,
+        )
+        if is_guild:
+            await ctx.message.delete()
+        await confirmation_view.wait()
+
+        # Pre-checks to see if the user wants to continue
+        if not confirmation_view.interacted:
+            return await status_message.edit("Timed out. Cancelling.", view=None)
+        if not confirmation_view.intr_continue:
+            return await status_message.edit("Interaction cancelled.", view=None)
+
+        # User wants to continue. Remove the buttons so the user doesn't get failed interactions after the first
+        await status_message.edit(view=None)
+
+        status_webhook: discord.WebhookMessage = (
+            await confirmation_view.followup_webhook.send(
+                "Processing...", ephemeral=is_guild
+            )
+        )
+
         async with self.course_modification_lock:
-            if len(ctx.message.attachments) != 1:
-                return await status_message.edit(
-                    f"Make sure your message has exactly **1** attachment. I found **{len(ctx.message.attachments)}**."
-                )
-
             # Parse the .ics file and find all the raw course strings
-            calendar_file: BytesIO = BytesIO()
-            await ctx.message.attachments[0].save(calendar_file)
-
             found_courses_raw: Set[str] = set()
             for line in calendar_file.readlines():
                 try:
@@ -343,8 +380,8 @@ class CourseThreads(commands.Cog):
                             )
                         )
                 except UnicodeDecodeError:
-                    return await status_message.edit(
-                        "Failed to parse the file. Is it an `.ics` or text file?"
+                    return await status_webhook.edit(
+                        "Failed to parse the file. Is it an `.ics` or text file?",
                     )
 
             if len(found_courses_raw) > MAX_COURSES_PER_ICS:
@@ -356,11 +393,8 @@ class CourseThreads(commands.Cog):
 
                 logging.info(status_message_str)
 
-                return await status_message.edit(
+                return await status_webhook.edit(
                     status_message_str,
-                    allowed_mentions=discord.AllowedMentions(
-                        everyone=False, users=False, roles=False
-                    ),
                 )
 
             # Try to convert into Course objects, tracking the failed results
@@ -377,70 +411,98 @@ class CourseThreads(commands.Cog):
             invalid_courses: Set[Course] = set()
             confirmed_courses: Set[Course] = set()
 
-            # Gather the courses that already have a thread
+            # Gather the courses that already have a thread or are valid UBC courses
             for course in parsed_courses:
                 if self._does_course_exist(course)[1]:
                     confirmed_courses.add(course)
-
-            # For the remaining courses, check if it's a valid UBC course and attempt to create it
-            for course in parsed_courses - confirmed_courses:
-                course_from_ubc: Optional[Course] = await scrape_course_info(course)
-                if course_from_ubc is None:
-                    invalid_courses.add(course)
                 else:
-                    create_result: Tuple[
-                        Optional[str], Optional[discord.Thread]
-                    ] = await self._create_course_thread(course)
-                    if create_result[1] is not None:
-                        confirmed_courses.add(course)
-                    else:
+                    course_from_ubc: Optional[Course] = await scrape_course_info(
+                        course, self.session
+                    )
+                    await asyncio.sleep(
+                        0.2
+                    )  # Add a slight delay to prevent UBC from rate-limiting us
+                    if course_from_ubc is None:
                         invalid_courses.add(course)
+                    else:
+                        confirmed_courses.add(course)
 
         status_message_str: str = (
             "**Here's what I found**\n"
             + (
                 ""
                 if not confirmed_courses
-                else f"\nYou'll be added to the following course threads:\n"
+                else f"\n__You can be added to the following course threads__\n"
                 + ", ".join([f"`{course}`" for course in confirmed_courses])
             )
             + (
                 ""
                 if not invalid_courses
-                else "\nThese courses could not be found in UBC's course schedule or its thread failed to create:\n"
+                else "\n__These courses could not be found in UBC's course schedule__ [1]\n"
                 + ", ".join([f"`{course}`" for course in invalid_courses])
             )
             + (
                 ""
                 if not unparsed_courses
-                else "\nThese courses could not be parsed:\n"
+                else "\n__These courses could not be parsed__\n"
                 + ", ".join([f"`{course}`" for course in unparsed_courses])
             )
             + (
-                "\nNothing"
+                "\n`Nothing`"
                 if not confirmed_courses
                 and not invalid_courses
                 and not unparsed_courses
                 else ""
             )
-            + "\n\n***Does that look right?*** If it doesn't, feel free to try the command again."
-            + "\nNOTE: some online courses may not be included in your schedule."
+            + "\n\n**Does that look right?** If it doesn't, feel free to cancel and try the command again."
+            + "\n**NOTE:** Some online courses may not be included in your schedule."
+            + "\n[1] This could be due to network errors."
         )
-        await status_message.edit(
-            status_message_str,
-            allowed_mentions=discord.AllowedMentions(
-                everyone=False, users=False, roles=False
-            ),
-        )
-
         logging.info(status_message_str)
 
+        # At this point, the threads will be created but we'll still give the user the option to cancel
+        # We can afford to wait here since we're no longer holding the modification lock
+        final_confirmation_view: discord.ui.View = ConfirmationView(ctx.author)
+        status_message: discord.Message = await status_webhook.edit(
+            status_message_str,
+            view=final_confirmation_view,
+        )
+        await final_confirmation_view.wait()
+
+        if not final_confirmation_view.interacted:
+            return await status_webhook.edit("Timed out. Cancelling.", view=None)
+        if not final_confirmation_view.intr_continue:
+            return await status_webhook.edit("Interaction cancelled.", view=None)
+
+        await status_webhook.edit(view=None)
+
+        # Create the threads that we found were valid earlier
+        async with self.course_modification_lock:
+            for course in confirmed_courses:
+                # Filter out courses that already have threads
+                if self._does_course_exist(course)[1]:
+                    continue
+
+                create_result: Tuple[
+                    Optional[str], Optional[discord.Thread]
+                ] = await self._create_course_thread(course)
+                if create_result[1] is None:
+                    logging.error(f"Failed to create a thread for {course}")
+                    return await final_confirmation_view.followup_webhook.send(
+                        f"Failed to create a thread for `{course}`. This is a bot error -- try again later.",
+                        ephemeral=is_guild,
+                    )
+
+        # Finally, add the user
         for course in confirmed_courses:
             course_thread: discord.Thread = await self._get_course_thread(course)
+            # Technically, we could run into issues if the thread gets deleted while
+            # we're iterating, but we won't lock this because it's prone to user-bucketed
+            # rate limits so it's better to let the error bubble up here
             await course_thread.add_user(ctx.author)
 
-        await ctx.reply(
-            "Done processing! You are now free to delete your uploaded file (if you wish)."
+        await final_confirmation_view.followup_webhook.send(
+            "Done. Best of luck!", ephemeral=is_guild
         )
 
     @tasks.loop(seconds=1)
