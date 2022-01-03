@@ -70,6 +70,8 @@ This command relies on an external service [[source](https://github.com/lcfyi/re
 
 #### Course Threads
 
+Note that this feature is single-tenant; that is, this shouldn't be used across multiple servers.
+
 Course threads take advantage of Discord's threads feature to create permanent threads per course.
 
 Admins can specify particular channels for course year levels as the base channel for the threads, which the bot will use to register the corresponding courses. For example, if we had the following channel list:
@@ -93,6 +95,8 @@ In order to register each channel for the year levels. Using this, we can spawn 
 Users can then join the thread through the Discord UI, or by calling `!courses join CPEN331`.
 
 Note that these threads are intended to last forever -- that is, each thread should cover all offerings regardless of term. This is so that we keep the maximum thread count (active and archived) down so we don't hit Discord's theoretical limitations which, as of writing, has not been announced yet.
+
+There is also a command that allows a user to import their SSC schedule using `!courses import` and adding their schedule as an attachment to the message. If this feature is invoked in the guild, the status messages will be ephemeral. Otherwise they will be sent as regular messages.
 
 #### Thread Manager
 
