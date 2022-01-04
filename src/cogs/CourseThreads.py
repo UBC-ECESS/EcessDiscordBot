@@ -367,68 +367,67 @@ class CourseThreads(commands.Cog):
             )
         )
 
-        async with self.course_modification_lock:
-            # Parse the .ics file and find all the raw course strings
-            found_courses_raw: Set[str] = set()
-            for line in calendar_file.readlines():
-                try:
-                    line: str = line.decode("utf-8")
-                    if line.startswith(ICS_PARSING_PREFIX):
-                        # Example of summary line from .ics is SUMMARY:CPEN 491 001
-                        # The section/tutorial number _should_ be at the end, but it shouldn't matter here
-                        found_courses_raw.add(
-                            # Do a little preprocessing in order to make the Course type conversion easier
-                            "".join(
-                                line.replace(ICS_PARSING_PREFIX, "").strip().split()[:2]
-                            )
+        # Parse the .ics file and find all the raw course strings
+        found_courses_raw: Set[str] = set()
+        for line in calendar_file.readlines():
+            try:
+                line: str = line.decode("utf-8")
+                if line.startswith(ICS_PARSING_PREFIX):
+                    # Example of summary line from .ics is SUMMARY:CPEN 491 001
+                    # The section/tutorial number _should_ be at the end, but it shouldn't matter here
+                    found_courses_raw.add(
+                        # Do a little preprocessing in order to make the Course type conversion easier
+                        "".join(
+                            line.replace(ICS_PARSING_PREFIX, "").strip().split()[:2]
                         )
-                except UnicodeDecodeError:
-                    return await status_webhook.edit(
-                        "Failed to parse the file. Is it an `.ics` or text file?",
                     )
-
-            if len(found_courses_raw) > MAX_COURSES_PER_ICS:
-                status_message_str: str = (
-                    f"The number of courses found exceeds the **{MAX_COURSES_PER_ICS}** maximum allowed."
-                    + "\n"
-                    + f"Found {len(found_courses_raw)}: {', '.join([f'`{course}`' for course in found_courses_raw])}"
-                )
-
-                logging.info(status_message_str)
-
+            except UnicodeDecodeError:
                 return await status_webhook.edit(
-                    status_message_str,
+                    "Failed to parse the file. Is it an `.ics` or text file?",
                 )
 
-            # Try to convert into Course objects, tracking the failed results
-            unparsed_courses: Set[str] = set()
-            parsed_courses: Set[Course] = set()
-            for course in found_courses_raw:
-                parse_result: Optional[Course] = Course.parse(course)
-                if parse_result:
-                    parsed_courses.add(parse_result)
+        if len(found_courses_raw) > MAX_COURSES_PER_ICS:
+            status_message_str: str = (
+                f"The number of courses found exceeds the **{MAX_COURSES_PER_ICS}** maximum allowed."
+                + "\n"
+                + f"Found {len(found_courses_raw)}: {', '.join([f'`{course}`' for course in found_courses_raw])}"
+            )
+
+            logging.info(status_message_str)
+
+            return await status_webhook.edit(
+                status_message_str,
+            )
+
+        # Try to convert into Course objects, tracking the failed results
+        unparsed_courses: Set[str] = set()
+        parsed_courses: Set[Course] = set()
+        for course in found_courses_raw:
+            parse_result: Optional[Course] = Course.parse(course)
+            if parse_result:
+                parsed_courses.add(parse_result)
+            else:
+                unparsed_courses.add(course)
+
+        # Track courses that either aren't valid UBC courses, or its thread creation failed
+        invalid_courses: Set[Course] = set()
+        confirmed_courses: Set[Course] = set()
+
+        # Gather the courses that already have a thread or are valid UBC courses
+        for course in parsed_courses:
+            if self._does_course_exist(course)[1]:
+                confirmed_courses.add(course)
+            else:
+                course_from_ubc: Optional[Course] = await scrape_course_info(
+                    course, self.session
+                )
+                await asyncio.sleep(
+                    0.25
+                )  # Add a slight delay to prevent UBC from rate-limiting us
+                if course_from_ubc is None:
+                    invalid_courses.add(course)
                 else:
-                    unparsed_courses.add(course)
-
-            # Track courses that either aren't valid UBC courses, or its thread creation failed
-            invalid_courses: Set[Course] = set()
-            confirmed_courses: Set[Course] = set()
-
-            # Gather the courses that already have a thread or are valid UBC courses
-            for course in parsed_courses:
-                if self._does_course_exist(course)[1]:
                     confirmed_courses.add(course)
-                else:
-                    course_from_ubc: Optional[Course] = await scrape_course_info(
-                        course, self.session
-                    )
-                    await asyncio.sleep(
-                        0.2
-                    )  # Add a slight delay to prevent UBC from rate-limiting us
-                    if course_from_ubc is None:
-                        invalid_courses.add(course)
-                    else:
-                        confirmed_courses.add(course)
 
         status_message_str: str = (
             (
