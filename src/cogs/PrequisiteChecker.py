@@ -6,7 +6,6 @@ from discord.ext import commands
 from utils.Converters import Course
 import csv
 import os
-import aiohttp
 
 from utils.UBCCourseInfo import scrape_archive_course_info, scrape_course_info
 
@@ -35,7 +34,6 @@ class PrerequisiteChecker(commands.Cog):
             course_info_dict[row["Course"]] = row
 
         self.course_info_dict = course_info_dict
-        self.session = aiohttp.ClientSession()
 
     @commands.command()
     async def prereq(self, ctx, arg):
@@ -85,9 +83,9 @@ class PrerequisiteChecker(commands.Cog):
         Get a simplified view of the course info.
         Make sure the course is in the form of DEPT### (case-insensitive).
         """
-        course_info = await scrape_course_info(course, self.session)
+        course_info = await scrape_course_info(course)
         if course_info is None:
-            course_info = await scrape_archive_course_info(course, self.session)
+            course_info = await scrape_archive_course_info(course)
         if course_info is None:
             return await ctx.send("Course not found.")
         em = discord.Embed(title=course_info["name"], url=course_info["url"])

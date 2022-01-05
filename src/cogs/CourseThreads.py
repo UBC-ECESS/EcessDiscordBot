@@ -1,7 +1,6 @@
 import asyncio
 import logging
 from typing import Dict, Any, Optional, Set, Tuple, Union, List
-import aiohttp
 import discord
 from io import BytesIO
 from discord.ext import commands, tasks
@@ -45,7 +44,6 @@ class CourseThreads(commands.Cog):
     def __init__(self, client: commands.Bot):
         self.client: commands.Bot = client
         self.course_mappings: Dict[str, Any] = read_json(THREADS_CONFIG_FILENAME)
-        self.session = aiohttp.ClientSession()
         self.course_modification_lock = asyncio.Lock()
         self.thread_refresher_task.start()
 
@@ -418,9 +416,7 @@ class CourseThreads(commands.Cog):
             if self._does_course_exist(course)[1]:
                 confirmed_courses.add(course)
             else:
-                course_from_ubc: Optional[Course] = await scrape_course_info(
-                    course, self.session
-                )
+                course_from_ubc: Optional[Course] = await scrape_course_info(course)
                 await asyncio.sleep(
                     0.25
                 )  # Add a slight delay to prevent UBC from rate-limiting us
