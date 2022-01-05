@@ -3,7 +3,7 @@ import discord
 
 
 class ConfirmationView(discord.ui.View):
-    def __init__(self, invoking_user: discord.User, timeout: int = 20):
+    def __init__(self, invoking_user: discord.User, timeout: int = 60):
         super().__init__(timeout=timeout)
         self.invoking_user: discord.User = invoking_user
         self.interacted: bool = False
