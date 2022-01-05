@@ -3,12 +3,11 @@ Commands to verify prerequisites for ECE/CS courses
 """
 import discord
 from discord.ext import commands
-from bs4 import BeautifulSoup
 from utils.Converters import Course
 import csv
 import os
-import aiohttp
-import re
+
+from utils.UBCCourseInfo import scrape_archive_course_info, scrape_course_info
 
 
 class PrerequisiteChecker(commands.Cog):
@@ -35,7 +34,6 @@ class PrerequisiteChecker(commands.Cog):
             course_info_dict[row["Course"]] = row
 
         self.course_info_dict = course_info_dict
-        self.session = aiohttp.ClientSession()
 
     @commands.command()
     async def prereq(self, ctx, arg):
@@ -85,9 +83,9 @@ class PrerequisiteChecker(commands.Cog):
         Get a simplified view of the course info.
         Make sure the course is in the form of DEPT### (case-insensitive).
         """
-        course_info = await self._scrape_course_info(course)
+        course_info = await scrape_course_info(course)
         if course_info is None:
-            course_info = await self._scrape_archive_course_info(course)
+            course_info = await scrape_archive_course_info(course)
         if course_info is None:
             return await ctx.send("Course not found.")
         em = discord.Embed(title=course_info["name"], url=course_info["url"])
@@ -101,106 +99,6 @@ class PrerequisiteChecker(commands.Cog):
         em.add_field(name="Credits", value=course_info["credits"])
         em.add_field(name="Description", inline=False, value=course_info["description"])
         await ctx.send(embed=em)
-
-    @staticmethod
-    def _get_course_url(dept, course):
-        return f"https://courses.students.ubc.ca/cs/courseschedule?pname=subjarea&tname=subj-course&dept={dept}&course={course}"
-
-    async def _scrape_course_info(self, course: Course):
-        url = self._get_course_url(course.dept, course.course)
-        try:
-            async with self.session.get(url) as resp:
-                soup = BeautifulSoup(await resp.text(), "html.parser")
-                name = soup.find(
-                    lambda predicate: predicate.name == "h4"
-                    and all([c.upper() in predicate.text for c in {course.course, course.dept}])
-                )
-                prereqs = soup.find(
-                    lambda predicate: predicate.name == "p"
-                    and "Pre-reqs:" in predicate.text
-                )
-                coreqs = soup.find(
-                    lambda predicate: predicate.name == "p"
-                    and "Co-reqs:" in predicate.text
-                )
-                creds = soup.find(
-                    lambda predicate: predicate.name == "p"
-                    and "Credits:" in predicate.text
-                )
-                if not name:
-                    return None
-                return {
-                    "url": url,
-                    "name": name.text.strip(),
-                    "description": name.next_sibling.text.strip(),
-                    "prerequisites": prereqs.text.replace("Pre-reqs:", "").strip()
-                    if prereqs
-                    else "None",
-                    "corequisites": coreqs.text.replace("Co-reqs:", "").strip()
-                    if coreqs
-                    else "None",
-                    "credits": creds.text.replace("Credits:", "").strip()
-                    if creds
-                    else "Not found",
-                    "footer": "Source: UBC Course Schedule",
-                }
-        except Exception as e:
-            print(e)
-            return None
-
-    @staticmethod
-    def _get_course_archive_url(dept, course):
-        # Insecure site only since it doesn't look like UBC calendar works over TLS
-        return f"http://www.calendar.ubc.ca/vancouver/courses.cfm?page=code&code={dept}"
-
-    async def _scrape_archive_course_info(self, course: Course):
-        url = self._get_course_archive_url(course.dept, course.course)
-        try:
-            async with self.session.get(url) as resp:
-                soup = BeautifulSoup(await resp.text(), "html.parser")
-                title = soup.find(
-                    lambda predicate: predicate.name == "dt"
-                    and all([c.upper() in predicate.text for c in {course.course, course.dept}])
-                )
-                if not title:
-                    return None
-                desc = title.find_next("dd")
-                credits, name, prereqs, coreqs, desc = (
-                    None,
-                    None,
-                    "None",
-                    "None",
-                    desc.text,
-                )
-                title_parse = re.search(
-                    r"(?:[\S\s]+?)\(([0-9]+?)\)([\S\s]+)", title.text
-                )
-                if not title_parse:
-                    return None
-                pres = re.search(r"(?:Prerequisite\:)([\S\s]+?\.)", desc)
-                cos = re.search(r"(?:Corequisite\:)([\S\s]+?\.)", desc)
-                credits, name = title_parse.groups()
-                desc = desc.replace(
-                    "This course is not eligible for Credit/D/Fail grading.", ""
-                )
-                if pres:
-                    prereqs = pres.group(1)
-                    desc = desc.replace(pres.group(0), "")
-                if cos:
-                    coreqs = cos.group(1)
-                    desc = desc.replace(cos.group(0), "")
-                return {
-                    "url": url,
-                    "name": f"{course.dept} {course.course} {name.strip()}",
-                    "description": desc.strip(),
-                    "prerequisites": prereqs.strip(),
-                    "corequisites": coreqs.strip(),
-                    "credits": str(credits),
-                    "footer": "Source: UBC Course Archive",
-                }
-        except Exception as e:
-            print(e)
-            return None
 
 
 def setup(client):

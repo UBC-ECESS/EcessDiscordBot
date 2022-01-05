@@ -5,12 +5,20 @@ Please ensure `secrets/token.txt` contains the bot's token.
 import discord
 import os
 import traceback
+import logging
 from discord.ext import commands
 
 from utils.FancyHelp import FancyHelp
 
 
 def main():
+    logging.basicConfig(
+        format="(%(levelname)s) [%(asctime)s] %(message)s",
+        level=logging.INFO,
+        filename="bot_info.log",
+        filemode="a",
+    )
+
     # Enable privileged intents
     # Certain methods (eg. `guild.get_members`) require privileged intents
     intents = discord.Intents.default()
@@ -26,7 +34,7 @@ def main():
         Print a message indicating it is ready
         Primarily for debugging purposes
         """
-        print("Bot is ready!")
+        logging.info("Bot is ready!")
 
     @client.event
     async def on_command_error(ctx, error):
@@ -50,7 +58,7 @@ def main():
             await ctx.send("Malformed arguments. Command help:")
             await help.send_group_help(ctx.command)
         else:
-            print(
+            logging.warning(
                 "".join(
                     traceback.format_exception(type(error), error, error.__traceback__)
                 )
@@ -80,7 +88,9 @@ def main():
         """
         Command logging.
         """
-        print(f"Command invoked: {ctx.command} by {ctx.author} with message {ctx.message.content}")
+        logging.info(
+            f"Command invoked: {ctx.command} by {ctx.author} with message {ctx.message.content}"
+        )
 
     # Parent directory of the bot repo; constructed as parentDir(fileDir(file))
     bot_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

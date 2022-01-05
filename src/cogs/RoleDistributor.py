@@ -3,6 +3,7 @@ Use reactions to add and remove roles.
 Please ensure `secrets/role_msg_id.txt` contains the selected message ID 
 """
 from json.decoder import JSONDecodeError
+import logging
 import typing
 import discord
 import json
@@ -236,9 +237,9 @@ class RoleDistributor(commands.Cog):
                             if str(r) != str(payload.emoji):
                                 await message.remove_reaction(r.emoji, member)
                     await member.add_roles(role)
-                    print(f"Role {role} assigned to {member}!")
+                    logging.info(f"Role {role} assigned to {member}!")
                 else:
-                    print("Member not found, or role was invalid.")
+                    logging.info("Member not found, or role was invalid.")
             else:
                 await message.remove_reaction(payload.emoji, member)
 
@@ -268,9 +269,9 @@ class RoleDistributor(commands.Cog):
 
                 if member is not None and role is not None:
                     await member.remove_roles(role)
-                    print(f"Role {role} removed from {member}!")
+                    logging.info(f"Role {role} removed from {member}!")
                 else:
-                    print("Member not found.")
+                    logging.info("Member not found.")
 
 
 def setup(client):
