@@ -458,7 +458,9 @@ class CourseThreads(commands.Cog):
 
         # At this point, the threads will be created but we'll still give the user the option to cancel
         # We can afford to wait here since we're no longer holding the modification lock
-        final_confirmation_view: discord.ui.View = ConfirmationView(ctx.author)
+        final_confirmation_view: discord.ui.View = ConfirmationView(
+            ctx.author, timeout=120
+        )
         course_selection_view: discord.ui.Select = discord.ui.Select(
             placeholder="Select courses to be added to...",
             min_values=0,
