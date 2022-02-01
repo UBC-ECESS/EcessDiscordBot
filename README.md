@@ -11,6 +11,7 @@ The following features are currently supported:
 - Assigning roles from reaction messages
 - ECE FAQ commands
 - Prerequisite checker commands
+- Running code snippets
 
 ## Architecture
 
@@ -52,11 +53,6 @@ Once you're done, finalize the mapping with `!finalize_role_mapping`. This will 
 - Mapping can only be done by the bot owner at this time (TODO)
 
 ### Commands
-
-#### Prerequisite Checking
-
-Commands can be found within the `PrerequisiteChecker.py` file.
-ECE/CS course prerequisites can be fetched through using the `!prereq` command with the selected course. For example, using `!prereq cpen333` will list the prerequisites for CPEN333 (System Software Engineering) as CPSC259 or CPEN223. Please ensure there are no spaces when providing the course input. The courses supported can be found in `assets/ece-course-prereqs.csv`.
 
 #### Course Info
 
@@ -132,15 +128,7 @@ Once the repl service is initialized, this cog can be set up with `!set_repl htt
 #### FAQ
 
 Commands can be found within the `FaqManager.py` file.
-A Frequently Asked Questions (FAQ) document can be brought up with the various commands. In addition, it will link to a document which will be hosted on Google Drive and open to suggestions for all ECE members to contribute. The default commands are:
-
-- `!programs`: Brings up program links for ECE, including MASc and MEng.
-- `!interviews`: Brings up a self-written ECE interview prep guide, which is a WIP.
-- `!leetcode`: Brings up a self-written LeetCode introductory prep guide, which can be found [here](https://docs.google.com/document/d/16BeYJzj_az-8Zv562RgZ0M_mxvCo6W6Thhc0D1oaNwE/edit?usp=sharing).
-- `!blind75`: Brings up the Blind 75 LeetCode list, which can be found [here](https://docs.google.com/spreadsheets/d/1O6lu-27mkdEfQAFfMB43vcqZRF57ygtJO2tCDw2ZQaY/edit?usp=sharing).
-- `!repo`: Brings up the Github repository for the ECESS Discord Bot.
-
-More default commands can be added by adding them in `assets/default_commands.json`. The structure follows:
+A Frequently Asked Questions (FAQ) document can be brought up with the various commands. In addition, it will link to a document which will be hosted on Google Drive and open to suggestions for all ECE members to contribute. Thedefault commands are found in `assets/default_commands.json`. The structure follows:
 
 ```json
 "command_name": {
