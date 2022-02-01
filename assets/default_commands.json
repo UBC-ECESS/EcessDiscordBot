@@ -5,7 +5,7 @@
   },
   "leetcode": {
     "description": "Bring up the LeetCode Intro Prep Guide",
-    "content": "LC Intro Guide: <https://docs.google.com/document/d/16BeYJzj_az-8Zv562RgZ0M_mxvCo6W6Thhc0D1oaNwE/edit?usp=sharing> \nTo bring up the Blind75 list, please use `!blind75`"
+    "content": "LC Intro Guide: <https://kelvinkoon.dev/posts/leetcode-intro-guide/>\nTo bring up the Blind75 list, please use `!blind75`"
   },
   "blind75": {
     "description": "Bring up the Blind75 LeetCode list",
@@ -13,6 +13,6 @@
   },
   "repo": {
     "description": "Bring up the bot's Github repository",
-    "content": "ECESS Discord Bot's Github Repo: <https://github.com/kelvinkoon/ecess-discord-bot>"
+    "content": "ECESS Discord Bot's Github Repo: <https://github.com/UBC-ECESS/EcessDiscordBot>"
   }
 }
