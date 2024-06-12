@@ -12,7 +12,7 @@ RETRY_COUNT: int = 3
 
 
 def get_course_url(dept: str, course: str):
-    return f"https://courses.students.ubc.ca/cs/courseschedule?pname=subjarea&tname=subj-course&dept={dept}&course={course}"
+    return f"https://vancouver.calendar.ubc.ca/course-descriptions/subject/{dept.lower()}v"
 
 
 async def _request_retry_wrapper(
@@ -35,66 +35,28 @@ async def scrape_course_info(course: Course) -> Optional[Dict[str, str]]:
 
     def parser(content: str):
         soup = BeautifulSoup(content, "html.parser")
-        name = soup.find(
-            lambda predicate: predicate.name == "h4"
+        course_container = soup.find(
+            lambda predicate: predicate.name == "div" and "text-formatted" in predicate.get("class", [])
             and all([c.upper() in predicate.text for c in {course.course, course.dept}])
         )
-        prereqs = soup.find(
-            lambda predicate: predicate.name == "p" and "Pre-reqs:" in predicate.text
-        )
-        coreqs = soup.find(
-            lambda predicate: predicate.name == "p" and "Co-reqs:" in predicate.text
-        )
-        creds = soup.find(
-            lambda predicate: predicate.name == "p" and "Credits:" in predicate.text
+
+        title = course_container.find(
+            lambda predicate: predicate.name == "h3"
         )
 
-        return (
-            {
-                "url": url,
-                "name": name.text.strip(),
-                "description": name.next_sibling.text.strip(),
-                "prerequisites": prereqs.text.replace("Pre-reqs:", "").strip()
-                if prereqs
-                else "None",
-                "corequisites": coreqs.text.replace("Co-reqs:", "").strip()
-                if coreqs
-                else "None",
-                "credits": creds.text.replace("Credits:", "").strip()
-                if creds
-                else "Not found",
-                "footer": "Source: UBC Course Schedule",
-            }
-            if name
-            else None
-        )
-
-    return await _request_retry_wrapper(url, parser)
-
-
-def get_course_archive_url(dept: str, course: str):
-    # Insecure site only since it doesn't look like UBC calendar works over TLS
-    return f"http://www.calendar.ubc.ca/vancouver/courses.cfm?page=code&code={dept}"
-
-
-async def scrape_archive_course_info(course: Course) -> Optional[Dict[str, str]]:
-    url: str = get_course_archive_url(course.dept, course.course)
-
-    def parser(content: str):
-        soup = BeautifulSoup(content, "html.parser")
-        title = soup.find(
-            lambda predicate: predicate.name == "dt"
-            and all([c.upper() in predicate.text for c in {course.course, course.dept}])
-        )
         if not title:
             return None
-        desc = title.find_next("dd")
+
+        description = course_container.find(
+            lambda predicate: predicate.name == "p"
+        )
+
         credits, name, prereqs, coreqs, desc = (
             None,
             None,
             "None",
             "None",
-            desc.text,
+            description.text,
         )
         title_parse = re.search(r"(?:[\S\s]+?)\(([0-9]+?)\)([\S\s]+)", title.text)
         if not title_parse:
@@ -118,7 +80,7 @@ async def scrape_archive_course_info(course: Course) -> Optional[Dict[str, str]]
             "prerequisites": prereqs.strip(),
             "corequisites": coreqs.strip(),
             "credits": str(credits),
-            "footer": "Source: UBC Course Archive",
+            "footer": "Source: UBC Course Schedule (Vancouver)",
         }
 
     return await _request_retry_wrapper(url, parser)

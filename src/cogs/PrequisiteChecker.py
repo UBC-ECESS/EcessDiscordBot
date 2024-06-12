@@ -5,7 +5,7 @@ import discord
 from discord.ext import commands
 from utils.Converters import Course
 
-from utils.UBCCourseInfo import scrape_archive_course_info, scrape_course_info
+from utils.UBCCourseInfo import scrape_course_info
 
 
 class PrerequisiteChecker(commands.Cog):
@@ -23,8 +23,6 @@ class PrerequisiteChecker(commands.Cog):
         Make sure the course is in the form of DEPT### (case-insensitive).
         """
         course_info = await scrape_course_info(course)
-        if course_info is None:
-            course_info = await scrape_archive_course_info(course)
         if course_info is None:
             return await ctx.send("Course not found.")
         em = discord.Embed(title=course_info["name"], url=course_info["url"])
